@@ -16,6 +16,7 @@ export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, com
  }, []);
  useEffect(() => {
   const m = map.current; if (!m || !raster) return;
+  const currentMap = m, currentRaster = raster;
   layer.current?.remove();
   const styles = getComputedStyle(document.documentElement), trend = raster.slice.mode === "trend";
   const stops = Array.from({ length: 5 }, (_, i) => styles.getPropertyValue(`--spatial-${trend ? "trend" : "value"}-${i}`).trim());
@@ -28,16 +29,16 @@ export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, com
    const context = tile.getContext("2d"); if (!context) return tile;
    const image = context.createImageData(256, 256);
    for (let y = 0; y < 256; y++) {
-    const lat = m.unproject(L.point(coords.x * 256, coords.y * 256 + y + 0.5), coords.z).lat;
+    const lat = currentMap.unproject(L.point(coords.x * 256, coords.y * 256 + y + 0.5), coords.z).lat;
     for (let x = 0; x < 256; x++) {
-     const lon = m.unproject(L.point(coords.x * 256 + x + 0.5, coords.y * 256), coords.z).lng;
-     const cell = cellAt(raster, lat, lon); if (!cell || cell.value === null) continue;
+     const lon = currentMap.unproject(L.point(coords.x * 256 + x + 0.5, coords.y * 256), coords.z).lng;
+     const cell = cellAt(currentRaster, lat, lon); if (!cell || cell.value === null) continue;
      const c = Math.round(Math.max(0, Math.min(1, (cell.value - low) / (high - low))) * 255) * 4, i = (y * 256 + x) * 4;
      image.data[i] = colors[c] ?? 0; image.data[i + 1] = colors[c + 1] ?? 0; image.data[i + 2] = colors[c + 2] ?? 0; image.data[i + 3] = 255;
      if (grid && coords.z >= 5) {
-      const next = cellAt(raster, lat, lon + 360 / (256 * 2 ** coords.z));
-      const below = m.unproject(L.point(coords.x * 256 + x, coords.y * 256 + y + 1.5), coords.z).lat;
-      if (next?.index !== cell.index || cellAt(raster, below, lon)?.index !== cell.index) image.data[i + 3] = 110;
+      const next = cellAt(currentRaster, lat, lon + 360 / (256 * 2 ** coords.z));
+      const below = currentMap.unproject(L.point(coords.x * 256 + x, coords.y * 256 + y + 1.5), coords.z).lat;
+      if (next?.index !== cell.index || cellAt(currentRaster, below, lon)?.index !== cell.index) image.data[i + 3] = 110;
      }
     }
    }
