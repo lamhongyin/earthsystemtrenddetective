@@ -10,7 +10,7 @@ const Input = z.object({
   end: z.number().int().min(MIN_YEAR).max(MAX_YEAR),
 });
 
-export type PowerResult = { ok: true; payload: string } | { ok: false; error: string };
+export type PowerResult = { ok: true; payload: string; retrievedAt: string } | { ok: false; error: string; retryAfter?: number };
 const TTL = 24 * 60 * 60 * 1000;
 const cache = new Map<string, { at: number; payload: string }>();
 
@@ -20,7 +20,7 @@ export const fetchPowerMonthly = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<PowerResult> => {
     const key = `${data.parameter}|${data.latitude}|${data.longitude}|${data.start}|${data.end}`;
     const hit = cache.get(key);
-    if (hit && Date.now() - hit.at < TTL) return { ok: true, payload: hit.payload };
+    if (hit && Date.now() - hit.at < TTL) return { ok: true, payload: hit.payload, retrievedAt: new Date(hit.at).toISOString() };
     const url = new URL(POWER_ENDPOINT);
     url.search = new URLSearchParams({
       parameters: data.parameter, community: "AG",
@@ -40,10 +40,16 @@ export const fetchPowerMonthly = createServerFn({ method: "POST" })
     if (!res.ok) {
       let detail = text.slice(0, 400);
       try { const j = JSON.parse(text); detail = JSON.stringify(j.messages ?? j.detail ?? j.errors ?? j).slice(0, 400); } catch { /* keep text */ }
-      if (res.status === 429) return { ok: false, error: "NASA POWER rate limit reached. Please wait a minute and retry." };
+      if (res.status === 429 || res.status === 503) {
+        const header = res.headers.get("retry-after");
+        const delay = header && /^\d+$/.test(header) ? Number(header) : header ? Math.max(0, Math.ceil((Date.parse(header) - Date.now()) / 1000)) : 60;
+        const retryAfter = Number.isFinite(delay) ? delay : 60;
+        return { ok: false, error: `NASA POWER returned HTTP ${res.status}. Please wait ${retryAfter} seconds and retry.`, retryAfter };
+      }
       return { ok: false, error: `NASA POWER returned HTTP ${res.status}: ${detail}` };
     }
     try { JSON.parse(text); } catch { return { ok: false, error: "NASA POWER returned a response that is not valid JSON." }; }
-    cache.set(key, { at: Date.now(), payload: text });
-    return { ok: true, payload: text };
+    const at = Date.now();
+    cache.set(key, { at, payload: text });
+    return { ok: true, payload: text, retrievedAt: new Date(at).toISOString() };
   });
