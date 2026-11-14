@@ -48,3 +48,5 @@ use the editor.
 - Spatial snapshots use a bounded public NASA image-service proxy and nearest-cell numeric canvas tiles; no forecast service or point-request global mosaics, to preserve source alignment and independent availability.
 - Offline spatial preparation uses native annual grids and actual-year Sen slopes with all 20 years required; ship binaries and source-hash manifests, never recompute worldwide trends on page requests.
 - Spatial and historical views share A/B point state; rainfall annual maps retain accumulated totals while monthly maps divide totals by calendar duration, to avoid confusing rates with totals.
+- Hotspot screening runs in a cancellable browser worker over hash-verified annual NASA arrays; keep OLS screening separate from Sen-slope spatial products and retain exact annual evidence for every selected cell.
+- Hotspot thresholds use one jointly eligible population, true-cell spherical area weights and inverse-CDF quantiles; four-edge grouping wraps longitude while missing gaps remain disconnected, to preserve reproducible relative rankings.

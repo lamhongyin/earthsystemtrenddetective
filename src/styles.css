@@ -88,6 +88,9 @@
 }
 
 :root {
+  --hotspot-warming: oklch(0.59 0.18 35);
+  --hotspot-drying: oklch(0.52 0.13 230);
+  --hotspot-combined: oklch(0.48 0.18 335);
   --spatial-value-0: #243d80;
   --spatial-value-1: #339ac0;
   --spatial-value-2: #e6eee9;
@@ -218,3 +221,7 @@
 .spatial-marker-b { background: var(--comparison-b); }
 .spatial-legend-value { background: linear-gradient(to right, var(--spatial-value-0), var(--spatial-value-1), var(--spatial-value-2), var(--spatial-value-3), var(--spatial-value-4)); }
 .spatial-legend-trend { background: linear-gradient(to right, var(--spatial-trend-0), var(--spatial-trend-1), var(--spatial-trend-2), var(--spatial-trend-3), var(--spatial-trend-4)); }
+.hotspot-swatch { display: inline-block; width: 1rem; height: 1rem; border: 1px solid var(--foreground); }
+.hotspot-swatch-warming { background: var(--hotspot-warming); }
+.hotspot-swatch-drying { background: var(--hotspot-drying); }
+.hotspot-swatch-combined { background: var(--hotspot-combined); }

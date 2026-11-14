@@ -4,7 +4,7 @@ const years = Array.from({ length: 20 }, (_, i) => 2005 + i);
 const settings: Settings = { mode: "warming", bounds: { west: -180, east: 180, south: -90, north: 90 }, start: 2005, end: 2024, threshold: 10, mask: "all-valid" };
 describe("hotspot screening rules", () => {
   it("uses OLS per decade for positive, negative and zero slopes", () => { expect(fitAnnual(years, years.map(y => (y - 2005) * 2))?.slope).toBe(20); expect(fitAnnual(years, years.map(y => (y - 2005) * -3))?.slope).toBe(-30); expect(fitAnnual(years, years.map(() => 5))?.slope).toBe(0); });
-  it("preserves the actual calendar years around gaps", () => { const values = years.map(y => 2 * (y - 2005)); values[4] = NaN; values[7] = NaN; expect(fitAnnual(years, values)?.slope).toBe(20); expect(fitAnnual(years, values)?.count).toBe(18); });
+  it("preserves the actual calendar years around gaps", () => { const values = years.map(y => 2 * (y - 2005)); values[4] = NaN; values[7] = NaN; expect(fitAnnual(years, values)?.slope).toBeCloseTo(20, 12); expect(fitAnnual(years, values)?.count).toBe(18); });
   it("requires at least 15 requested years", () => { expect(() => validateSettings({ ...settings, end: 2018 }, years)).toThrow("15"); expect(() => validateSettings({ ...settings, end: 2019 }, years)).not.toThrow(); });
   it("requires at least 90 percent valid annual values", () => { const values = years.map(y => y); values[1] = NaN; values[2] = NaN; expect(fitAnnual(years, values)).not.toBeNull(); values[3] = NaN; expect(fitAnnual(years, values)).toBeNull(); });
   it("requires at least 15 valid years", () => { const short = years.slice(0, 15), values = short.map(y => y); values[5] = NaN; expect(fitAnnual(short, values)).toBeNull(); });

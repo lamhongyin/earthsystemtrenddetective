@@ -15,13 +15,14 @@ import { AnalysisResults } from "@/components/AnalysisResults";
 import { ForecastPanel } from "@/components/ForecastPanel";
 import { AirQualityPanel } from "@/components/AirQualityPanel";
 import { SpatialMapPanel } from "@/components/SpatialMapPanel";
+import { HotspotPanel } from "@/components/HotspotPanel";
 import type { SpatialCode } from "@/lib/spatial/data";
 const WorldMap = lazy(() => import("@/components/WorldMap"));
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
-    { title: "Earth System Trend Detective — Climate and Air Quality" },
-    { name: "description", content: "Compare NASA climate and solar trends, monthly forecasts, and GEOS-CF modeled PM2.5 with estimated US EPA 24-hour indices." },
+    { title: "Earth System Trend Detective — Climate Maps and Hotspots" },
+    { name: "description", content: "Investigate NASA climate maps, historical warming and drying hotspot candidates, solar trends, forecasts and modeled air quality." },
     { property: "og:title", content: "Earth System Trend Detective — Trends and forecasts" },
     { property: "og:description", content: "Compare worldwide environmental trends and evaluate monthly forecasting models against seasonal benchmarks using real NASA POWER records." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
@@ -63,6 +64,10 @@ function Index() {
   function spatialHistory(point: Point, parameter: SpatialCode) {
     if (loading) return;
     setA(draftPoint(point)); setMode("single"); setActive("A"); setCode(parameter); setTab("historical"); pendingHistory.current = true;
+  }
+  function compareHotspot(point: Point) {
+    if (loading) return;
+    setB(draftPoint(point)); setMode("compare"); setActive("B"); setCode("T2M"); setStartYear("2005"); setEndYear("2024"); setTab("historical"); pendingHistory.current = true;
   }
   async function run(retry?: "A" | "B") {
     if (loading || validation) return;
@@ -111,6 +116,7 @@ function Index() {
           {loading && <div role="status" className="space-y-1 text-sm">{Object.entries(status).map(([id, text]) => text && <p key={id} className="flex items-center gap-2"><Loader2 className="size-4 animate-spin" />Location {id}: {text}</p>)}</div>}
           <div role="tablist" aria-label="Investigation view" className="flex flex-wrap gap-2 border-b border-border pb-3"><Button role="tab" aria-selected={tab === "historical"} variant={tab === "historical" ? "default" : "outline"} onClick={() => setTab("historical")}>Historical analysis</Button><Button role="tab" aria-selected={tab === "forecast"} variant={tab === "forecast" ? "default" : "outline"} onClick={() => setTab("forecast")}>Forecast</Button><Button role="tab" aria-selected={tab === "air"} variant={tab === "air" ? "default" : "outline"} onClick={() => setTab("air")}>Air Quality</Button><Button role="tab" aria-selected={tab === "spatial"} variant={tab === "spatial" ? "default" : "outline"} onClick={() => setTab("spatial")}>Spatial Map</Button></div>
           {tab === "spatial" && <SpatialMapPanel a={pointA} b={pointB} compare={mode === "compare"} onUse={useSpatialPoint} onHistory={spatialHistory} />}
+          {tab === "hotspots" && <HotspotPanel a={pointA} b={pointB} compare={mode === "compare"} onUse={useSpatialPoint} onCompare={compareHotspot} />}
           <div hidden={tab !== "historical"}>{!result && <div className="border-t border-border py-8"><h2 className="text-2xl font-semibold">Ready to investigate environmental trends</h2></div>}{result && <AnalysisResults result={result} stale={stale} loading={loading} onRetry={id => run(id)} />}</div>
           <div hidden={tab !== "forecast"}><ForecastPanel a={pointA} b={pointB} compare={mode === "compare"} code={code} /></div>
           <div hidden={tab !== "air"}><AirQualityPanel a={pointA} b={pointB} compare={mode === "compare"} /></div>
