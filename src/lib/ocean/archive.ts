@@ -37,7 +37,7 @@ export function rasterCell(raster: z.infer<typeof rasterSchema>, lat: number, lo
 }
 async function source(code: OceanCode) { const m = await manifest(); const s = m.sources[code]; if (!s) throw new Error("No prepared dates available for this variable."); return { m, s }; }
 async function raster(code: OceanCode, date: string) { const { m, s } = await source(code); const spec = s.maps[date]; if (!spec) throw new Error("This location/period is not included in the prepared archive."); const r = rasterSchema.parse(JSON.parse(new TextDecoder().decode(await readAsset(spec)))); if (r.month !== date) throw new Error("Prepared observation month does not match its manifest."); return { m, s, r }; }
-export async function preparedMetadata() { const m = await manifest(); return { sources: Object.values(m.sources).map(s => s.metadata), createdAt: m.createdAt }; }
+export async function preparedMetadata() { const m = await manifest(); return { sources: Object.values(m.sources).flatMap(s => s ? [s.metadata] : []), createdAt: m.createdAt }; }
 export async function preparedImage(code: OceanCode, date: string) {
   const { s, r } = await raster(code, date);
   const canvas = document.createElement("canvas"); canvas.width = r.width; canvas.height = r.height;
