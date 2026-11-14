@@ -12,14 +12,15 @@ import { fetchPowerMonthly } from "@/lib/trend/nasa.functions";
 import { makePointResult, requestKey, snapshotKey, type Analysis, type Point, type Snapshot } from "@/lib/trend/comparison";
 import { LocationPicker, draftPoint, numericPoint } from "@/components/LocationPicker";
 import { AnalysisResults } from "@/components/AnalysisResults";
+import { ForecastPanel } from "@/components/ForecastPanel";
 const WorldMap = lazy(() => import("@/components/WorldMap"));
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
-    { title: "Earth System Trend Detective — Worldwide NASA POWER explorer" },
-    { name: "description", content: "Explore worldwide NASA POWER point records and compare annual environmental trends over common complete years using Mann–Kendall and Theil–Sen statistics." },
-    { property: "og:title", content: "Earth System Trend Detective — Worldwide explorer" },
-    { property: "og:description", content: "Select world points and compare temperature, rainfall, humidity and wind trends from real NASA POWER data." },
+    { title: "Earth System Trend Detective — Trends and monthly forecasts" },
+    { name: "description", content: "Explore worldwide NASA POWER trends and experimental monthly forecasts with time-ordered backtesting and empirical prediction intervals." },
+    { property: "og:title", content: "Earth System Trend Detective — Trends and forecasts" },
+    { property: "og:description", content: "Compare worldwide environmental trends and evaluate monthly forecasting models against seasonal benchmarks using real NASA POWER records." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }), component: Index,
 });
@@ -28,6 +29,7 @@ function initialPoint(index: number): Point {
   return { ...p, origin: "preset" };
 }
 function Index() {
+  const [tab, setTab] = useState("historical");
   const [mode, setMode] = useState<Snapshot["mode"]>("single");
   const [a, setA] = useState(() => draftPoint(initialPoint(0)));
   const [b, setB] = useState(() => draftPoint(initialPoint(5)));
@@ -93,8 +95,9 @@ function Index() {
           <div className="grid gap-3 sm:grid-cols-2">{[{ id: "A", p: pointA }, ...(mode === "compare" ? [{ id: "B", p: pointB }] : [])].map(({ id, p }) => <div key={id} className={`min-w-0 border-l-4 py-1 pl-3 ${id === "A" ? "border-primary" : "border-comparison-b"}`}><p className="break-words text-sm font-medium">{id} · {p.label}</p><p className="font-mono text-xs text-muted-foreground">{Number.isFinite(p.lat) ? p.lat.toFixed(4) : "—"}, {Number.isFinite(p.lon) ? p.lon.toFixed(4) : "—"}</p></div>)}</div></section>
           <div className="flex gap-3 border-y border-border bg-notice p-4 text-sm text-notice-foreground"><Info className="size-4 shrink-0 mt-0.5" /><p>This version analyzes the NASA POWER grid cell for a selected point. It does not calculate a mean over an entire state or country.</p></div>
           {loading && <div role="status" className="space-y-1 text-sm">{Object.entries(status).map(([id, text]) => text && <p key={id} className="flex items-center gap-2"><Loader2 className="size-4 animate-spin" />Location {id}: {text}</p>)}</div>}
-          {!result && <div className="border-t border-border py-8"><h2 className="text-2xl font-semibold">Ready to investigate environmental trends</h2></div>}
-          {result && <AnalysisResults result={result} stale={stale} loading={loading} onRetry={id => run(id)} />}
+          <div role="tablist" aria-label="Investigation view" className="flex gap-2 border-b border-border pb-3"><Button role="tab" aria-selected={tab === "historical"} variant={tab === "historical" ? "default" : "outline"} onClick={() => setTab("historical")}>Historical analysis</Button><Button role="tab" aria-selected={tab === "forecast"} variant={tab === "forecast" ? "default" : "outline"} onClick={() => setTab("forecast")}>Forecast</Button></div>
+          <div hidden={tab !== "historical"}>{!result && <div className="border-t border-border py-8"><h2 className="text-2xl font-semibold">Ready to investigate environmental trends</h2></div>}{result && <AnalysisResults result={result} stale={stale} loading={loading} onRetry={id => run(id)} />}</div>
+          <div hidden={tab !== "forecast"}><ForecastPanel a={pointA} b={pointB} compare={mode === "compare"} code={code} /></div>
         </main>
       </div>
     </div>
