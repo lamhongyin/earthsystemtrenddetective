@@ -14,6 +14,8 @@ import { LocationPicker, draftPoint, numericPoint } from "@/components/LocationP
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { ForecastPanel } from "@/components/ForecastPanel";
 import { AirQualityPanel } from "@/components/AirQualityPanel";
+import { SpatialMapPanel } from "@/components/SpatialMapPanel";
+import type { SpatialCode } from "@/lib/spatial/data";
 const WorldMap = lazy(() => import("@/components/WorldMap"));
 
 export const Route = createFileRoute("/")({
@@ -41,6 +43,7 @@ function Index() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<Partial<Record<"A" | "B", string>>>({});
   const reqId = useRef(0);
+  const pendingHistory = useRef(false);
   const retryUntil = useRef<Partial<Record<"A" | "B", number>>>({});
   const qc = useQueryClient(), fetchPower = useServerFn(fetchPowerMonthly);
   const param = PARAMETERS.find(p => p.code === code) ?? PARAMETERS[0];
@@ -51,6 +54,16 @@ function Index() {
   const stale = !!result && snapshotKey(result.snapshot) !== key;
   const validation = validateCoords(pointA.lat, pointA.lon) ? `Location A: ${validateCoords(pointA.lat, pointA.lon)}` : mode === "compare" && validateCoords(pointB.lat, pointB.lon) ? `Location B: ${validateCoords(pointB.lat, pointB.lon)}` : validatePeriod(snapshot.start, snapshot.end, code);
   useEffect(() => () => { reqId.current++; }, []);
+  useEffect(() => { if (pendingHistory.current && !loading) { pendingHistory.current = false; void run(); } }, [key, loading, tab]);
+  function useSpatialPoint(id: "A" | "B", point: Point) {
+    if (loading) return;
+    if (id === "A") setA(draftPoint(point)); else { setB(draftPoint(point)); setMode("compare"); }
+    setActive(id);
+  }
+  function spatialHistory(point: Point, parameter: SpatialCode) {
+    if (loading) return;
+    setA(draftPoint(point)); setMode("single"); setActive("A"); setCode(parameter); setTab("historical"); pendingHistory.current = true;
+  }
   async function run(retry?: "A" | "B") {
     if (loading || validation) return;
     const s = retry && result ? result.snapshot : snapshot;
@@ -92,11 +105,12 @@ function Index() {
           {validation && <p role="alert" className="text-sm text-destructive">{validation}</p>}
           <Button className="h-auto min-h-10 w-full whitespace-normal py-2" disabled={!!validation || loading} onClick={() => run()}>{loading && <Loader2 className="animate-spin" />}Fetch NASA data and analyze</Button>
         </aside>
-        <main className="min-w-0 space-y-6"><section className="space-y-3"><div className="flex items-baseline justify-between gap-2"><h2 className="text-xl font-semibold">Worldwide point selection</h2><span className="text-xs text-muted-foreground">Target {active}</span></div><ClientOnly fallback={<div className="h-[340px] bg-muted" />}><Suspense fallback={<div className="h-[340px] bg-muted" />}><WorldMap a={pointA} b={pointB} compare={mode === "compare"} active={active} onSelect={(lat, lon) => { if (loading) return; const p = draftPoint({ lat, lon, label: `Selected point (${lat.toFixed(4)}, ${lon.toFixed(4)})`, origin: "coordinates" }); if (active === "A") setA(p); else setB(p); }} /></Suspense></ClientOnly>
+        <main className="min-w-0 space-y-6"><section hidden={tab === "spatial"} className="space-y-3"><div className="flex items-baseline justify-between gap-2"><h2 className="text-xl font-semibold">Worldwide point selection</h2><span className="text-xs text-muted-foreground">Target {active}</span></div><ClientOnly fallback={<div className="h-[340px] bg-muted" />}><Suspense fallback={<div className="h-[340px] bg-muted" />}><WorldMap a={pointA} b={pointB} compare={mode === "compare"} active={active} onSelect={(lat, lon) => { if (loading) return; const p = draftPoint({ lat, lon, label: `Selected point (${lat.toFixed(4)}, ${lon.toFixed(4)})`, origin: "coordinates" }); if (active === "A") setA(p); else setB(p); }} /></Suspense></ClientOnly>
           <div className="grid gap-3 sm:grid-cols-2">{[{ id: "A", p: pointA }, ...(mode === "compare" ? [{ id: "B", p: pointB }] : [])].map(({ id, p }) => <div key={id} className={`min-w-0 border-l-4 py-1 pl-3 ${id === "A" ? "border-primary" : "border-comparison-b"}`}><p className="break-words text-sm font-medium">{id} · {p.label}</p><p className="font-mono text-xs text-muted-foreground">{Number.isFinite(p.lat) ? p.lat.toFixed(4) : "—"}, {Number.isFinite(p.lon) ? p.lon.toFixed(4) : "—"}</p></div>)}</div></section>
           <div className="flex gap-3 border-y border-border bg-notice p-4 text-sm text-notice-foreground"><Info className="size-4 shrink-0 mt-0.5" /><p>{tab === "air" ? "Air Quality uses a NASA GEOS-CF surface grid cell, not an individual monitoring station or an entire state or country." : "This version analyzes the NASA POWER grid cell for a selected point. It does not calculate a mean over an entire state or country."}</p></div>
           {loading && <div role="status" className="space-y-1 text-sm">{Object.entries(status).map(([id, text]) => text && <p key={id} className="flex items-center gap-2"><Loader2 className="size-4 animate-spin" />Location {id}: {text}</p>)}</div>}
-          <div role="tablist" aria-label="Investigation view" className="flex flex-wrap gap-2 border-b border-border pb-3"><Button role="tab" aria-selected={tab === "historical"} variant={tab === "historical" ? "default" : "outline"} onClick={() => setTab("historical")}>Historical analysis</Button><Button role="tab" aria-selected={tab === "forecast"} variant={tab === "forecast" ? "default" : "outline"} onClick={() => setTab("forecast")}>Forecast</Button><Button role="tab" aria-selected={tab === "air"} variant={tab === "air" ? "default" : "outline"} onClick={() => setTab("air")}>Air Quality</Button></div>
+          <div role="tablist" aria-label="Investigation view" className="flex flex-wrap gap-2 border-b border-border pb-3"><Button role="tab" aria-selected={tab === "historical"} variant={tab === "historical" ? "default" : "outline"} onClick={() => setTab("historical")}>Historical analysis</Button><Button role="tab" aria-selected={tab === "forecast"} variant={tab === "forecast" ? "default" : "outline"} onClick={() => setTab("forecast")}>Forecast</Button><Button role="tab" aria-selected={tab === "air"} variant={tab === "air" ? "default" : "outline"} onClick={() => setTab("air")}>Air Quality</Button><Button role="tab" aria-selected={tab === "spatial"} variant={tab === "spatial" ? "default" : "outline"} onClick={() => setTab("spatial")}>Spatial Map</Button></div>
+          {tab === "spatial" && <SpatialMapPanel a={pointA} b={pointB} compare={mode === "compare"} onUse={useSpatialPoint} onHistory={spatialHistory} />}
           <div hidden={tab !== "historical"}>{!result && <div className="border-t border-border py-8"><h2 className="text-2xl font-semibold">Ready to investigate environmental trends</h2></div>}{result && <AnalysisResults result={result} stale={stale} loading={loading} onRetry={id => run(id)} />}</div>
           <div hidden={tab !== "forecast"}><ForecastPanel a={pointA} b={pointB} compare={mode === "compare"} code={code} /></div>
           <div hidden={tab !== "air"}><AirQualityPanel a={pointA} b={pointB} compare={mode === "compare"} /></div>
