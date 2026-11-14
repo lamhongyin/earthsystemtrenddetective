@@ -56,3 +56,5 @@ use the editor.
 
 - PV calculations reuse canonical POWER solar point records and shared A/B coordinates; immutable constant-capacity/PR snapshots calculate horizontal resource electricity in pure TypeScript, to avoid duplicate efficiency/loss factors and forecast-host dependence.
 - PV annual statistics use complete 12-month electricity totals and common-year alignment before fitting existing trend helpers, to preserve calendar duration and comparison parity.
+- Rainfall source investigations use separate canonical calendar-month depth records in `src/lib/rainfall`, strict reviewed CSV imports and native-support matching; never feed depths to rate annualisation or substitute POWER for IMERG.
+- IMERG cloud catalogue discovery is not data retrieval; expose imports honestly until authenticated NASA numeric access is verified, and retain immutable source hashes, intervals and support for reproducible monthly research without a Python runtime.
