@@ -13,7 +13,7 @@ export function validateScenario(s: Scenario) {
   return errors;
 }
 const radians = (v: number) => v * Math.PI / 180;
-const fit = (f: number, a: number[], b: number[], c: number[], m: number, offset: number) => a.reduce((sum, v, i) => sum + v * Math.exp(-((Math.log10(f) - (b[i] ?? 0)) / (c[i] ?? 1)) ** 2), 0) + m * Math.log10(f) + offset;
+const fit = (f: number, a: number[], b: number[], c: number[], m: number, offset: number) => a.reduce((sum, v, i) => sum + v * Math.exp(-(((Math.log10(f) - (b[i] ?? 0)) / (c[i] ?? 1)) ** 2)), 0) + m * Math.log10(f) + offset;
 export function coefficients(frequencyGHz: number, elevationDeg: number, tiltDeg: number) {
   if (![frequencyGHz, elevationDeg, tiltDeg].every(Number.isFinite) || frequencyGHz < 1 || frequencyGHz > 1000) throw new Error("Unsupported P.838 inputs.");
   const kh = 10 ** fit(frequencyGHz, [-5.3398, -.35351, -.23789, -.94158], [-.10008, 1.2697, .86036, .64552], [1.13098, .454, .15354, .16817], -.18961, .71147);
