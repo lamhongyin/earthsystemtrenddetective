@@ -65,6 +65,8 @@ export async function oceanHistory(target: OceanTarget, start: number, end: numb
   if (!Number.isInteger(start) || !Number.isInteger(end) || start < 2002 || end < start || end - start > 24 || end > new Date().getUTCFullYear()) throw new Error("Choose between 2002 and the current year, with at most 25 years per request.");
   return cached(`history:${JSON.stringify({ target, start, end })}`, async () => {
     const sst = await numeric("sst", target, start, end), chl = await numeric("chlorophyll", target, start, end);
+    const chlCell = chl.rows[0];
+    const chlMask = !target.bounds && chlCell ? await numeric("sst", { lat: chlCell.lat, lon: chlCell.lon }, start, start) : null;
     const months = monthRange(start, end), fixedSea = new Map<string, { lat: number; lon: number }>();
     // The first available MUR month defines a fixed open-sea population. Ice/lake/land excluded.
     const reference = sst.rows[0]?.time;
@@ -74,11 +76,11 @@ export async function oceanHistory(target: OceanTarget, start: number, end: numb
       const unique = new Map(source.rows.map(r => [`${r.lat},${r.lon}`, r]));
       for (const [key, r] of unique) {
         const nearest = [...fixedSea.values()].sort((a, b) => (a.lat-r.lat)**2+(a.lon-r.lon)**2-((b.lat-r.lat)**2+(b.lon-r.lon)**2))[0];
-        const sea = code === "sst" ? fixedSea.has(key) : !!nearest && Math.abs(nearest.lat-r.lat) <= 0.016 && Math.abs(nearest.lon-r.lon) <= 0.016;
+        const sea = code === "sst" ? fixedSea.has(key) : chlMask ? chlMask.rows[0]?.mask === 1 : !!nearest && Math.abs(nearest.lat-r.lat) <= 0.016 && Math.abs(nearest.lon-r.lon) <= 0.016;
         if (sea) eligible.set(key, target.bounds ? cellWeight(r.lat, r.lon, OCEAN_SOURCES[code].resolution, target.bounds) : 1);
       }
       const monthly = oceanMean(source.rows, eligible, months, code);
-      return { code, target, cell: source.rows[0] ? { lat: source.rows[0].lat, lon: source.rows[0].lon } : null, months: monthly, metadata: source.metadata, sourceUrl: source.sourceUrl, retrievedAt: new Date().toISOString(), maskMethod: "Fixed open-sea mask from first available MUR month; chlorophyll cells matched to nearest MUR mask cell (≤0.016° each axis). Ice, lakes and land excluded. Region weights use clipped spherical cell area; not observation-count weighting. MUR requires ≥80% daily nobs; monthly region requires ≥70% valid eligible area." };
+      return { code, target, cell: source.rows[0] ? { lat: source.rows[0].lat, lon: source.rows[0].lon } : null, months: monthly, metadata: source.metadata, sourceUrl: source.sourceUrl, retrievedAt: new Date().toISOString(), maskMethod: "Fixed open-sea mask from first available MUR month; chlorophyll point masks queried at their own source-cell centres; region cells matched to nearest MUR mask cell (≤0.016° each axis). Ice, lakes and land excluded. Region weights use clipped spherical cell area; not observation-count weighting. MUR requires ≥80% daily nobs; monthly region requires ≥70% valid eligible area." };
     });
   });
 }
