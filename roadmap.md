@@ -1,7 +1,7 @@
 # Worldwide explorer
 ## One-click ITU loading and short-interval rainfall research
-- [ ] Install hash-verified owner-supplied ITU assets based on owner's stated redistribution permission; enable one-click loading while retaining local files and safe exports.
-- [ ] Add local 30-minute / one-minute imports, strict distributions and chronological held-out quantile-transfer investigation; do not treat estimates as measurements or feed them to attenuation models.
+- [x] Install hash-verified owner-supplied ITU assets based on owner's stated redistribution permission; enable one-click loading while retaining local files and safe exports.
+- [x] Add local 30-minute / one-minute imports, strict distributions and chronological held-out quantile-transfer investigation; do not treat estimates as measurements or feed them to attenuation models.
 - [ ] Verify automatic map/point flow, scientific tests and mobile preview; no publication.
 - [ ] Validate with real half-hourly IMERG and matching local one-minute observations (blocked: these two rainfall datasets have not been uploaded).
 ## January 2024 SST and artificial Fisheries demonstration
