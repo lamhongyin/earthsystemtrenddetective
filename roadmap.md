@@ -1,8 +1,9 @@
 # Worldwide explorer
 ## January 2024 SST and artificial Fisheries demonstration
-- [ ] Decode owner SST NetCDF with CF packing, native quality 0/1 and fixed ocean mask; install checksum-verified assets without altering chlorophyll.
-- [ ] Add paired real environmental maps, separate artificial fish symbols and persistent disclosure.
-- [ ] Test real values, histories, map controls, downloads and mobile preview; do not publish.
+- [x] Decode owner SST NetCDF with CF packing, native quality 0/1 and fixed ocean mask; install checksum-verified assets without altering chlorophyll.
+- [x] Add paired real environmental maps, separate artificial fish symbols and persistent disclosure.
+- [x] Test real values, histories, map controls, downloads and mobile preview; 201 tests pass, build OK, no publication.
+- Limits: January 2024 only, 1° overview and six prepared native point/region histories. Artificial icons only; no intensity layer, fish prediction or image export introduced.
 ## Monthly CCDF and ITU attenuation
 - [x] Add strict empirical monthly CCDF, paired samples, seasonal filtering and exports.
 - [x] Acquire and inspect official P.837-8/P.839-4 grids; verify pure pinned-model helpers against official satellite references and independent terrestrial equations.
