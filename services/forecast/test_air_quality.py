@@ -1,6 +1,9 @@
 import unittest
 from datetime import datetime, timedelta, timezone
 import numpy as np
+from unittest.mock import patch
+from fastapi.testclient import TestClient
+from app import app
 from air_quality import index_for, summarize, nearest, conversion, clean, extract
 
 class AirTests(unittest.TestCase):
@@ -68,5 +71,18 @@ class AirTests(unittest.TestCase):
     def test_bounds(self):
         with self.assertRaises(ValueError): extract([{'latitude':91,'longitude':0}],24)
         with self.assertRaises(ValueError): extract([{'latitude':0,'longitude':0}],25)
+
+    def test_authenticated_bounded_api(self):
+        with patch.dict('os.environ', {'FORECAST_SERVICE_TOKEN': 'unit-test-only-token'}):
+            client=TestClient(app)
+            payload={'points':[{'latitude':1.4927,'longitude':103.7414}], 'horizon':24}
+            self.assertEqual(client.post('/air-quality',json=payload).status_code,401)
+            headers={'Authorization':'Bearer unit-test-only-token'}
+            with patch('app.extract',return_value=[{'source':'NASA GEOS-CF'}]) as adapter:
+                response=client.post('/air-quality',json=payload,headers=headers)
+                self.assertEqual(response.json()['results'][0]['source'],'NASA GEOS-CF')
+                adapter.assert_called_once_with(payload['points'],24)
+            payload['horizon']=25
+            self.assertEqual(client.post('/air-quality',json=payload,headers=headers).status_code,422)
 
 if __name__ == '__main__': unittest.main()
