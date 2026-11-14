@@ -7,9 +7,9 @@ export function parseRates(text: string, interval: 1 | 30): RateRow[] {
   if (!csv.data.length || csv.data.length > 150000) throw new Error("Provide 1–150,000 records per file.");
   const seen = new Set<number>();
   return csv.data.map(row => {
-    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00Z$/.test(row.timestamp_utc ?? "")) throw new Error("Use UTC interval-start timestamps YYYY-MM-DDTHH:mm:00Z.");
-    const time = Date.parse(row.timestamp_utc ?? ""), value = row.rate_mm_h?.trim() ?? "", rate = Number(value);
-    if (!Number.isFinite(time) || time % (interval * 60000) !== 0 || new Date(time).toISOString().replace(".000", "") !== row.timestamp_utc || !value || !Number.isFinite(rate) || rate < 0 || seen.has(time)) throw new Error("Invalid, negative, duplicate or off-grid record; missing rainfall must not be filled.");
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00Z$/.test(row["timestamp_utc"] ?? "")) throw new Error("Use UTC interval-start timestamps YYYY-MM-DDTHH:mm:00Z.");
+    const time = Date.parse(row["timestamp_utc"] ?? ""), value = row["rate_mm_h"]?.trim() ?? "", rate = Number(value);
+    if (!Number.isFinite(time) || time % (interval * 60000) !== 0 || new Date(time).toISOString().replace(".000", "") !== row["timestamp_utc"] || !value || !Number.isFinite(rate) || rate < 0 || seen.has(time)) throw new Error("Invalid, negative, duplicate or off-grid record; missing rainfall must not be filled.");
     seen.add(time); return { time, rate };
   }).sort((a, b) => a.time - b.time);
 }
