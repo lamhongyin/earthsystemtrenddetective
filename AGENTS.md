@@ -52,6 +52,7 @@ use the editor.
 - Hotspot thresholds use one jointly eligible population, true-cell spherical area weights and inverse-CDF quantiles; four-edge grouping wraps longitude while missing gaps remain disconnected, to preserve reproducible relative rankings.
 
 - Fisheries serves independently loaded checksum-verified versioned NASA bundles from app assets; offline Python preparation publishes the manifest last, so upstream outages cannot invalidate saved data and request runtimes never execute Python.
+- Imported Fisheries scientific JSON is stored unchanged in Lovable Assets; the public manifest uses its returned same-origin asset URLs with original byte sizes and hashes, keeping integrity checks valid without repository media copies.
 - Fisheries MODIS source grids, native-cell histories and area-weighted overview/region coverage remain explicit and distinct; descriptive month-effect slopes never imply significance or fish occurrence, preventing old MUR assumptions or arbitrary-point history substitution.
 
 - PV calculations reuse canonical POWER solar point records and shared A/B coordinates; immutable constant-capacity/PR snapshots calculate horizontal resource electricity in pure TypeScript, to avoid duplicate efficiency/loss factors and forecast-host dependence.

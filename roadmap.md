@@ -1,4 +1,9 @@
 # Worldwide explorer
+## Prepared January 2024 chlorophyll installation
+- Verified sample only: 157 tests pass; 33,211 valid overview cells, 31,589 transparent cells; all six native presets and CSV/JSON verified. SST and longer histories remain unavailable; original NetCDF is not included, so preparation evidence is supplied provenance, not a new raw-source reconstruction.
+- [x] Install exact-byte chlorophyll assets, validate schema and integrity, and preserve independently verified sources.
+- [x] Default to chlorophyll January 2024; disclose historical-only coverage, native resolution and unavailable SST.
+- [x] Verify world layer, native point/region histories, missing cells and downloads; leave unpublished.
 ## Giovanni / IMERG monthly rainfall comparison
 - [x] Verify official monthly v07 catalogue, variable and January 2024 granule; document 401 authentication limitation.
 - [ ] Verify a real Johor IMERG Final series and Giovanni-derived investigation (blocked: no owner Earthdata authorization or genuine Giovanni CSV supplied).

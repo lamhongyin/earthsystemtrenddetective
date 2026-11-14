@@ -2,7 +2,7 @@ import { z } from "zod";
 import { OCEAN_SOURCES, OCEAN_VERSION, commonMonth, type OceanCode, type OceanMetadata, type OceanRecord, type OceanTarget, validateOceanTarget } from "./data";
 
 const month = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
-const asset = z.object({ path: z.string().regex(/^\/fisheries\/[a-zA-Z0-9_./-]+$/).refine(p => !p.includes("..")), sha256: z.string().regex(/^[a-f0-9]{64}$/), bytes: z.number().int().positive().max(8_000_000) });
+const asset = z.object({ path: z.string().regex(/^(?:\/fisheries\/[a-zA-Z0-9_./-]+|\/__l5e\/assets-v1\/[a-f0-9-]+\/[a-zA-Z0-9_.-]+)$/).refine(p => !p.includes("..")), sha256: z.string().regex(/^[a-f0-9]{64}$/), bytes: z.number().int().positive().max(8_000_000) });
 const metadata = z.object({ id: z.string(), title: z.string(), start: z.string(), end: z.string(), times: z.array(month), unit: z.string(), version: z.string(), summary: z.string(), latFirst: z.number(), latLast: z.number(), lonFirst: z.number(), lonLast: z.number(), retrievedAt: z.string(), resolution: z.number().positive() });
 export const manifestSchema = z.object({ schema: z.literal(OCEAN_VERSION), bundle: z.string(), createdAt: z.string().datetime(), sources: z.object({ sst: z.object({ metadata, maps: z.record(z.string(), asset), histories: asset, provenance: z.record(z.string(), z.unknown()) }).optional(), chlorophyll: z.object({ metadata, maps: z.record(z.string(), asset), histories: asset, provenance: z.record(z.string(), z.unknown()) }).optional() }) }).superRefine((m, ctx) => {
   for (const code of ["sst", "chlorophyll"] as const) {
