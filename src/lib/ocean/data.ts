@@ -6,7 +6,7 @@ export const OCEAN_SOURCES = {
 } as const;
 export type OceanCode = keyof typeof OCEAN_SOURCES;
 export type OceanBounds = { south: number; north: number; west: number; east: number };
-export type OceanTarget = { lat: number; lon: number; bounds?: OceanBounds };
+export type OceanTarget = { lat: number; lon: number; bounds?: OceanBounds | undefined };
 export type OceanRow = { time: string; lat: number; lon: number; value: number | null; mask?: number; nobs?: number };
 export type OceanMonth = { month: string; value: number | null; coverage: number; validCells: number; oceanCells: number };
 export type OceanMetadata = { id: string; title: string; start: string; end: string; times: string[]; unit: string; version: string; summary: string; latFirst: number; latLast: number; lonFirst: number; lonLast: number; retrievedAt: string; resolution: number };
