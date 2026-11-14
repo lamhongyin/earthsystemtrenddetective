@@ -1,0 +1,306 @@
+{
+  "version": "power-annual-hotspots-2005-2024-v1",
+  "preparedAt": "2026-11-14T14:23:32.767Z",
+  "years": [
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "grid": {
+    "width": 576,
+    "height": 361,
+    "west": -180.3125,
+    "north": 90.25,
+    "dx": 0.625,
+    "dy": 0.5
+  },
+  "sources": [
+    {
+      "code": "T2M",
+      "variable": "T2M",
+      "service": "https://gis.earthdata.nasa.gov/portal/rest/services/POWER/POWER_ANNUAL_METEOROLOGY_LST/ImageServer",
+      "unit": "°C",
+      "originalUnit": "C",
+      "aggregation": "time: mean-weighted",
+      "missing": -999,
+      "nativeResolution": "0.5° latitude × 0.625° longitude (MERRA-2)",
+      "identities": [
+        {
+          "year": 2005,
+          "time": 1135987200000,
+          "originalTiffSha256": "74b7c5a753e839a555204823b90546ad39ce6ee4bbaf2f2bba725fcf49a0650e",
+          "binarySha256": "8fd0a19a1ed4e1d8b1b230374b3abcfeb72d5abcdea751affe46cf815e014393"
+        },
+        {
+          "year": 2006,
+          "time": 1167523200000,
+          "originalTiffSha256": "3e839e5111ae864de1e32e57d2f89567af482ebff3a4efd4613088194a881c46",
+          "binarySha256": "4219b8c68cf3f22b803a6471a82b699e19652e064b4f43c30889b3394f10b7c7"
+        },
+        {
+          "year": 2007,
+          "time": 1199059200000,
+          "originalTiffSha256": "505c7513821c5fb6adb3bd22112b31719f11184d670bbe5594f17dcfd548d888",
+          "binarySha256": "574453a2eed15e6b8b2500593547c18dabb11f1952dc19f6c2b2d6cd48dfefef"
+        },
+        {
+          "year": 2008,
+          "time": 1230681600000,
+          "originalTiffSha256": "8e9fbcd4e6d3463e80ebf5fb7b6d9c468d9aae858c77077f57b1792462de8c97",
+          "binarySha256": "e5ba437bc203d189225a144c8ff1fe96135e959d2c802b9e31dfcba474cba47f"
+        },
+        {
+          "year": 2009,
+          "time": 1262217600000,
+          "originalTiffSha256": "597cc39a1492a8cf42647af5804eabbb9a740e5c801148a8394d95eb715348cd",
+          "binarySha256": "da030f1feefe0937d737921f701360981e536b1cbe892a1fb528a64fed82d35f"
+        },
+        {
+          "year": 2010,
+          "time": 1293753600000,
+          "originalTiffSha256": "65a1a483da4c0c848d00a37ba38d62c53a9d9d8d19cab04b932e325499912c85",
+          "binarySha256": "7ab2c1baacac3362338bdbadfc690fcbaccdd3f7ee46e2a788c2193a80c500c1"
+        },
+        {
+          "year": 2011,
+          "time": 1325289600000,
+          "originalTiffSha256": "0cc547f5e47f4ce5f81bc214cfd06e4a68b900e97925980076c7edd5091ce0e0",
+          "binarySha256": "2ca1154722646983094e7a0770bd80197e8036310fe21fee52cd417e169d316e"
+        },
+        {
+          "year": 2012,
+          "time": 1356912000000,
+          "originalTiffSha256": "764a35f127530f4c384c945c5df55c72bc26e505fc063255b8a1361b180ea1ca",
+          "binarySha256": "3cb64d16da435c2e67f14a522a415703a33a607914d489de28ce219256746a03"
+        },
+        {
+          "year": 2013,
+          "time": 1388448000000,
+          "originalTiffSha256": "e9e7a7ee74b11fee454c40132e4675eed474a30fd349be0df4dff09716cd4cbd",
+          "binarySha256": "8815d33fdb033cec4323815f7937a73315f95195d4721d58360825431009452e"
+        },
+        {
+          "year": 2014,
+          "time": 1419984000000,
+          "originalTiffSha256": "ad6cde6c04ebd9cb93e923e559f150f0509936dd9d38e4a73137789a5becf8cd",
+          "binarySha256": "eabe5ad5086aca5ca9130712b1bf3a0defdbf169c065e497a1b71398c2cd83a7"
+        },
+        {
+          "year": 2015,
+          "time": 1451520000000,
+          "originalTiffSha256": "b23c8874f3598c0b15395433b9af804e83e14f8fe9abd8f5eb69aecbfea4c2ef",
+          "binarySha256": "286fca67e568196336167ff3f65c0d1742f60dec46c04fc502851d92bc3d8210"
+        },
+        {
+          "year": 2016,
+          "time": 1483142400000,
+          "originalTiffSha256": "d44c9691bb1be1f8dae04ab8315b55dba7ff69cd6f211c6bb87d21cb4cb9795d",
+          "binarySha256": "b4ea8ae5a6192691b390571de5ef1b46085068b569d8297561278557c38db855"
+        },
+        {
+          "year": 2017,
+          "time": 1514678400000,
+          "originalTiffSha256": "97eca8427f797ef9e4eb478c0560834d8f50ed69d7142747e60a940c5ca2e6cb",
+          "binarySha256": "95d0cf64f1b1e2281a5695ecca7b66ddb9071647255f896cb50aec57536f5fcc"
+        },
+        {
+          "year": 2018,
+          "time": 1546214400000,
+          "originalTiffSha256": "331bbd3d0d67efa452deb0addadf50020e89e63e03cbfc5cca98d0d29dd65bbd",
+          "binarySha256": "d30aaaf84898cb72a675e4309b498e0d7cd807825abcb2907f59b05597695fd6"
+        },
+        {
+          "year": 2019,
+          "time": 1577750400000,
+          "originalTiffSha256": "c0f05223695d7bed819e2979ac169657f976337efd79afcb125bfb08a75c316a",
+          "binarySha256": "bbfacbf2e7849d45e6f9ded57dfe98d2f37aa28eeec47baa803b52bc2592df34"
+        },
+        {
+          "year": 2020,
+          "time": 1609372800000,
+          "originalTiffSha256": "fa29bd76a35a7d29f0551f982d5fb6071588562a13fdd48a923c255d3163d3c4",
+          "binarySha256": "e75729ad81e4bf97c64bf74296482b790994d5572be34c4e80f5bc65e8db61c5"
+        },
+        {
+          "year": 2021,
+          "time": 1640908800000,
+          "originalTiffSha256": "55b472a9886d55b8bcd84b14d70df66b9c47cc616220dabc8f1d7794cd664bc6",
+          "binarySha256": "50fae90cd29a4d2553184983d79cca00ab824236b5e04751bdded90499a19080"
+        },
+        {
+          "year": 2022,
+          "time": 1672444800000,
+          "originalTiffSha256": "8a46d523817bdab6457e1081c18b7c162d160f87e25a6e2b62a1fe62e8e430ad",
+          "binarySha256": "3b1ac8794f722309c60ea9269f108621c608f25ab427167519727fc2e3bab5cf"
+        },
+        {
+          "year": 2023,
+          "time": 1703980800000,
+          "originalTiffSha256": "18e81e1fbfdf96b8c2d1874895bc6de59480cf9ae91aa324a45e690e5d8479a6",
+          "binarySha256": "8994ad8c283a42589ac3a21d5e8a94de6f50bbdace723d0176056336d16161c6"
+        },
+        {
+          "year": 2024,
+          "time": 1735603200000,
+          "originalTiffSha256": "1732a21aea0208692e85976f57d1e1f2fcf221a3add6589e17a30e79b46eadaa",
+          "binarySha256": "1231999dbb2a7b62b2a2ba0a7a421943c0279d77472278015a5fd72a5a3856f5"
+        }
+      ]
+    },
+    {
+      "code": "PRECTOTCORR",
+      "variable": "PRECTOTCORR_SUM",
+      "service": "https://gis.earthdata.nasa.gov/portal/rest/services/POWER/POWER_ANNUAL_METEOROLOGY_LST/ImageServer",
+      "unit": "mm/year",
+      "originalUnit": "mm",
+      "aggregation": "time: sum",
+      "missing": -999,
+      "nativeResolution": "0.5° latitude × 0.625° longitude (MERRA-2)",
+      "identities": [
+        {
+          "year": 2005,
+          "time": 1135987200000,
+          "originalTiffSha256": "7bf58ae7162670b71c882594e28d138654cd95e73c8d49e702e75d3e66d638d3",
+          "binarySha256": "7cfe419e34fff227b095f9846d765d77e6561e7fc96391de4487a291bf938f23"
+        },
+        {
+          "year": 2006,
+          "time": 1167523200000,
+          "originalTiffSha256": "88b59beb047ea3363e65596b1fc589d7c061206ab6a23d09655af5f64b580092",
+          "binarySha256": "0872c5ca8ea278374d93330d86e6230b05f36e7b43520a50d6a21db3c9e6dfe4"
+        },
+        {
+          "year": 2007,
+          "time": 1199059200000,
+          "originalTiffSha256": "654e24b0d67a509022238cb5acdff551573052c124b182c8f419d0523c98ea09",
+          "binarySha256": "1c71b4aecb9ad858840e36f71fc003e8992d67d184de9f9d550f6ef400eafea5"
+        },
+        {
+          "year": 2008,
+          "time": 1230681600000,
+          "originalTiffSha256": "bd0c624ff5d9c40fa83ee1ffab3cfe5f3b69581d252adc08a61f50ee3a883fff",
+          "binarySha256": "86f27888848296c46ac6b0fcef783d4b470c04ef307ebcb0eb2400e7e0722ca1"
+        },
+        {
+          "year": 2009,
+          "time": 1262217600000,
+          "originalTiffSha256": "00e51ef876d4d21148d219566f990d61ee67ecc10c602186a0d099243f3f6789",
+          "binarySha256": "5139f77c7b53592ec2b9636189d50da376e56755c9593d0f104e8ecf521a558e"
+        },
+        {
+          "year": 2010,
+          "time": 1293753600000,
+          "originalTiffSha256": "427ef8f11665db49cdda5e39df0ff2c302ac46abab20580fbe60a627e88fd5b3",
+          "binarySha256": "b2dc0c337c53acdc1f09a13d1549efaeece3bb46b89f5bb854fd6ddb24127117"
+        },
+        {
+          "year": 2011,
+          "time": 1325289600000,
+          "originalTiffSha256": "0e3d6d41679854e56461bb79ced1711cc690c523d85a97526cbd9a8167aa0346",
+          "binarySha256": "ef459849763557e9331fea1c6f744d5ca5cd84a089852c828564d38315b91bae"
+        },
+        {
+          "year": 2012,
+          "time": 1356912000000,
+          "originalTiffSha256": "c64ad6e586aeec9d4d409149363cef08faff918a212fdb4fd235c6377cc7e0dc",
+          "binarySha256": "55f7a9a65a835a6937bb3de31c27467db1eb2860e63ca6f3b59466896732d125"
+        },
+        {
+          "year": 2013,
+          "time": 1388448000000,
+          "originalTiffSha256": "90859ff17bc927a8f02118d5b4a539aac4466c3abbc407b05274cafcf51bb5be",
+          "binarySha256": "a74f7aee129dc38fd2461771dc17cb7c0d3e6196d31921a0949dbd3f5aca5b7e"
+        },
+        {
+          "year": 2014,
+          "time": 1419984000000,
+          "originalTiffSha256": "32a12e114c927c5259b5e0570d731ba3943e5eadc2cfc7b1509f35ee2ee306e6",
+          "binarySha256": "2b9f879bfab7ec93e3fa3c9b3a9786c6f62d7eeb3cf89bd9b3cd51beeacf55ab"
+        },
+        {
+          "year": 2015,
+          "time": 1451520000000,
+          "originalTiffSha256": "4f4f25a4cac82f1bfe8d752e712a7bbb89f990dcafed60637c9a863675cd8edd",
+          "binarySha256": "ccaf30c68824a833705b6078c09e939d6ec0ac1b6e1fa786994dcac60396809d"
+        },
+        {
+          "year": 2016,
+          "time": 1483142400000,
+          "originalTiffSha256": "a9928dce378247e284a001058fba48af3f6d947190389c58be46475c7bb48979",
+          "binarySha256": "d673dd2eabbc261000db9f618a665a5eaafaa66b8524ca48d2a4c1f6d5140522"
+        },
+        {
+          "year": 2017,
+          "time": 1514678400000,
+          "originalTiffSha256": "0e2f3eec596f138f21ef230a7a75ddb64101f88f0375c8ec18c46de7afea1b37",
+          "binarySha256": "78572516c1e7ebc5c49e74e0c2645973eecedadad511011c5df1f71408fd8cfb"
+        },
+        {
+          "year": 2018,
+          "time": 1546214400000,
+          "originalTiffSha256": "80c2508cc1d29e69031b825a189b97335b6887cff6c785b74f49003255885b25",
+          "binarySha256": "261e13b4ec1bcabba9f8e02efdf4743c73f1c4c92b6b952396a1a3d20e710166"
+        },
+        {
+          "year": 2019,
+          "time": 1577750400000,
+          "originalTiffSha256": "02eb51a9d9c7442c5fc3f574be3cc88167a098962ceccf7fbdf40a45180ef9f1",
+          "binarySha256": "0cb5cd0abea5cbf43082239740e531c46935a07c19ae4dac7653ef3b4cdc8e1a"
+        },
+        {
+          "year": 2020,
+          "time": 1609372800000,
+          "originalTiffSha256": "32a352007fecf6da2e01cf156d79925d47284b7f6c3a42567a91c90d5e57b4a5",
+          "binarySha256": "d30a004d5a4f04b21825eebd9ca516873d7766ab97c2e9e8151c29dfb325f6db"
+        },
+        {
+          "year": 2021,
+          "time": 1640908800000,
+          "originalTiffSha256": "c4ddaab1a9a0936c5806ff563e58947207a822f2ac85b8320a847911a0a98984",
+          "binarySha256": "e4355712a4f5c917ed7818211f35d5571205751fe78314dd9ad6fc40f81797ab"
+        },
+        {
+          "year": 2022,
+          "time": 1672444800000,
+          "originalTiffSha256": "bf8615701408ce5d258de564370a8718ff17b4895a0248325a3b9098445f9bac",
+          "binarySha256": "3e5ad15621d26dd7a80618ce6667feddb5afed159e4f3846af547ef2065f64cd"
+        },
+        {
+          "year": 2023,
+          "time": 1703980800000,
+          "originalTiffSha256": "170cb003dbc79bb40fa2aa9e66f5a8a23b937b3b8dca669cefd874bfd8cbc7bd",
+          "binarySha256": "e414888e3218a52281fbfa0c1159fcc9d8f2bc96bd4cb95131b778b72e4be0b6"
+        },
+        {
+          "year": 2024,
+          "time": 1735603200000,
+          "originalTiffSha256": "23c5d8a11e2096013296677d89d794972e7f07b5f1bbe11f68fa16d0d0437994",
+          "binarySha256": "352384e968f636879ab92c68951d60c3a3947609a43bf24d3d6d72c849bdbbf9"
+        }
+      ]
+    }
+  ],
+  "completeness": "Source annual aggregation inherited from NASA; screening requires >=90% and >=15 valid annual values, valid first/last year, common temperature/rainfall eligibility",
+  "timeConvention": "Local solar time; source StdTime identifies period end",
+  "method": "OLS against actual calendar years, per-decade slope; no significance test",
+  "mask": "All valid cells, including oceans",
+  "binary": "Little-endian float32, row-major north to south; NaN denotes missing",
+  "sourceRetrieval": "Original TIFF retrieval/hashes recorded in public/spatial manifests; prepared binaries preserve annual source values"
+}
