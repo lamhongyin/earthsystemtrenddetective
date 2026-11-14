@@ -1,7 +1,7 @@
 export const OCEAN_VERSION = "nasa-prepared-modis-v2";
 export const OCEAN_SOURCES = {
   sst: { id: "MODISA_L3m_SST", variable: "sst", unit: "°C", originalUnit: "degree_C", resolution: 1 / 12, label: "MODIS Aqua monthly SST · 11 µm daytime", producer: "NASA OB.DAAC, MODIS Aqua R2019.0", low: -2, high: 35 },
-  chlorophyll: { id: "MODISA_L3m_CHL", variable: "chlor_a", unit: "mg/m³", originalUnit: "mg m-3", resolution: 1 / 12, label: "Chlorophyll-a", producer: "NASA OB.DAAC, MODIS Aqua 2022.0", low: 0.03, high: 30 },
+  chlorophyll: { id: "MODISA_L3m_CHL", variable: "chlor_a", unit: "mg/m³", originalUnit: "mg m-3", resolution: 1 / 12, label: "Chlorophyll-a", producer: "NASA OB.DAAC, MODIS Aqua", low: 0.03, high: 30 },
 } as const;
 export type OceanCode = keyof typeof OCEAN_SOURCES;
 export type OceanBounds = { south: number; north: number; west: number; east: number };
