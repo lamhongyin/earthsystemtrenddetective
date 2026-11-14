@@ -1,4 +1,10 @@
 # Worldwide explorer
+## Monthly CCDF and ITU attenuation
+- [x] Add strict empirical monthly CCDF, paired samples, seasonal filtering and exports.
+- [x] Acquire and inspect official P.837-8/P.839-4 grids; verify pure pinned-model helpers against official satellite references and independent terrestrial equations.
+- [ ] Complete bundled engineering grids, filled maps, geometry investigations, point curves and spatial exports (blocked: official ITU redistribution permission not established; originals remain temporary, no substitutes shipped).
+- [x] Add independent scenario validation, submitted request export and explicit unavailable-input status.
+- [x] 194 tests pass; real IMERG CCDF N=240, January N=20, CSV zero-tail, stale state, satellite/terrestrial p validation and phone layout verified; no browser errors, build OK; unpublished.
 ## Prepared January 2024 chlorophyll installation
 - Verified sample only: 157 tests pass; 33,211 valid overview cells, 31,589 transparent cells; all six native presets and CSV/JSON verified. SST and longer histories remain unavailable; original NetCDF is not included, so preparation evidence is supplied provenance, not a new raw-source reconstruction.
 - [x] Install exact-byte chlorophyll assets, validate schema and integrity, and preserve independently verified sources.
