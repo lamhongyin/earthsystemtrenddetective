@@ -58,6 +58,7 @@ describe("Installed NASA January 2024 chlorophyll sample", () => {
     useInstalledArchive();
     const overview = await preparedPoint("chlorophyll","2024-01",1.8,104.5);
     expect(overview.cell).toMatchObject({lat:1.5,lon:104.5});
+    expect(overview.months[0]?.value).toBe(2.539729);
     expect(overview.maskMethod).toContain("1°");
     await expect(preparedHistory({lat:0,lon:0},2024,2024)).rejects.toThrow("not included");
   });
