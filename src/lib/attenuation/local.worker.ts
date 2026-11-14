@@ -72,7 +72,7 @@ self.onmessage = async (event: MessageEvent<Message>) => {
       const max = points.reduce((v, p) => Math.max(v, p.apDb ?? 0), 0);
       if (max / s.intervalDb > 63) throw new Error("More than 64 contour bands; increase the contour interval. Scenario was not changed.");
       const levels = Array.from({ length: Math.max(2, Math.ceil(max / s.intervalDb) + 1) }, (_, i) => i * s.intervalDb);
-      if (s.marginDb !== null && s.marginDb > 0 && s.marginDb < levels[levels.length - 1] && !levels.includes(s.marginDb)) levels.push(s.marginDb);
+      if (s.marginDb !== null && s.marginDb > 0 && s.marginDb < (levels.at(-1) ?? 0) && !levels.includes(s.marginDb)) levels.push(s.marginDb);
       levels.sort((a, b) => a - b);
       const features = filledBands(points, columns, rows, levels, s.marginDb), submittedAt = new Date().toISOString();
       if (token !== generation) return;

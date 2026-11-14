@@ -1,6 +1,7 @@
 import L from "leaflet";
 import { useEffect, useRef } from "react";
 import type { MapResult } from "@/lib/attenuation/local";
+import type { FeatureCollection } from "geojson";
 export default function AttenuationMap({ result, onPoint }: { result: MapResult; onPoint: (lat: number, lon: number) => void }) {
   const host = useRef<HTMLDivElement>(null), callback = useRef(onPoint); callback.current = onPoint;
   useEffect(() => {
@@ -9,7 +10,8 @@ export default function AttenuationMap({ result, onPoint }: { result: MapResult;
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap · locally evaluated ITU climatology" }).addTo(map);
     const css = getComputedStyle(document.documentElement), colors = Array.from({ length: 5 }, (_, i) => css.getPropertyValue(`--spatial-value-${i}`).trim());
     const b = result.scenario.extent, max = result.levels.at(-1) ?? 1;
-    L.geoJSON({ type: "FeatureCollection", features: result.features }, {
+    const collection: FeatureCollection = { type: "FeatureCollection", features: result.features };
+    L.geoJSON(collection, {
       interactive: false,
       style: feature => {
         const lower = Number(feature?.properties?.lowerDb ?? 0), meets = feature?.properties?.rainFadeAllowanceMeets;
