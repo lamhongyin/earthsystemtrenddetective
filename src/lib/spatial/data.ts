@@ -19,6 +19,9 @@ export function canonicalValue(raw: number, code: SpatialCode, year: number, mon
   if (code === "RH2M" && raw > 100) return NaN;
   return code === "ALLSKY_SFC_SW_DWN" ? raw * 0.024 : code === "PRECTOTCORR" ? raw / calendarDays(year, month) : raw;
 }
+export function annualMapValue(raw: number, code: SpatialCode, year: number) {
+  return code === "PRECTOTCORR" ? (Number.isFinite(raw) && raw >= 0 ? raw : NaN) : canonicalValue(raw, code, year);
+}
 export function cellAt(r: Raster, lat: number, lon: number) {
   const longitude = ((lon - r.west) % 360 + 360) % 360 + r.west;
   const x = Math.floor((longitude - r.west) / r.dx), y = Math.floor((r.north - lat) / r.dy);

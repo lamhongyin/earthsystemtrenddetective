@@ -45,3 +45,6 @@ use the editor.
 - PM2.5 indices use versioned EPA decimal truncation/half-up rounding and strictly complete UTC windows; keep the air-quality scientific tests passing to prevent incomplete or model-only values being labeled official AQI.
 - Extract A/B GEOS-CF points as one verified snapshot with time and selected-chunk identities before/after reads; bounded point caches key those identities so changing latest runs cannot silently mix results.
 - Forecast hosting targets a free sleeping single instance: bind $PORT, lazy-load air-quality libraries, and surface cold-start/restart job loss honestly instead of retrying.
+- Spatial snapshots use a bounded public NASA image-service proxy and nearest-cell numeric canvas tiles; no forecast service or point-request global mosaics, to preserve source alignment and independent availability.
+- Offline spatial preparation uses native annual grids and actual-year Sen slopes with all 20 years required; ship binaries and source-hash manifests, never recompute worldwide trends on page requests.
+- Spatial and historical views share A/B point state; rainfall annual maps retain accumulated totals while monthly maps divide totals by calendar duration, to avoid confusing rates with totals.
