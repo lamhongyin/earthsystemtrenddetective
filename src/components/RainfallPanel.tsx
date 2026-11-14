@@ -67,8 +67,34 @@ export function RainfallPanel({ point }: { point: Point }) {
     } catch (e) { if (id === request.current && submitted === keyRef.current) setError(e instanceof Error ? e.message : "Rainfall analysis failed."); }
     finally { if (id === request.current) setBusy(false); }
   }
+  async function loadDemo() {
+    setDemoError(""); setError(""); const id = ++request.current;
+    setDemoBusy(true);
+    try {
+      const series = await loadDemoSeries();
+      if (id !== request.current) return;
+      // State-safe: build the result from the resolved demonstration configuration directly,
+      // so a single click never reads stale point/POWER state or discards the demo as stale.
+      setType("single"); setSource("IMERG"); setSpatial("region"); setStart("2005"); setEnd("2024");
+      setImerg(series);
+      const submitted = JSON.stringify([point.lat, point.lon, "IMERG", "single", "region", "2005", "2024", power?.sha256, series.sha256]);
+      keyRef.current = submitted;
+      setResult({ series: [series], comparison: null, start: 2005, end: 2024, spatial: "region", key: submitted, lat: point.lat, lon: point.lon });
+    } catch (e) { if (id === request.current) setDemoError(e instanceof Error ? e.message : "Demonstration load failed."); }
+    finally { if (id === request.current) setDemoBusy(false); }
+  }
   const c = result?.comparison;
+  const isDemo = !!result?.series.some(s => s.demo);
   return <section className="space-y-5" aria-label="Rainfall source investigation"><div className="flex items-center gap-2"><Droplets className="size-6 text-primary" /><h2 className="text-2xl font-semibold">POWER–IMERG rainfall investigation</h2></div>
+    <div className="space-y-3 rounded-lg border border-primary/40 bg-card p-4">
+      <h3 className="text-lg font-semibold">IMERG rainfall demonstration</h3>
+      <p className="text-sm text-muted-foreground">For demonstration purposes only. Explore a bundled historical NASA IMERG regional sample covering January 2005–December 2024: 240 monthly observations for 102–104°E, 1–3°N. This sample is limited to this period and region and does not update automatically.</p>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button onClick={loadDemo} disabled={demoBusy || busy}>{demoBusy ? <Loader2 className="animate-spin" /> : <Droplets />}{demoBusy ? "Loading demonstration…" : "load the data for demonstration purpose"}</Button>
+        <Button variant="outline" asChild><a href={demoAssetUrl()} download="imerg-demonstration-original-giovanni-export.csv"><Download />Download original demonstration CSV</a></Button>
+      </div>
+      {demoError && <p role="alert" className="break-words text-sm text-destructive">{demoError}</p>}
+    </div>
     <div className="grid gap-3 sm:grid-cols-2"><div><Label>Analysis type</Label><Select value={type} onValueChange={setType} disabled={busy}><SelectTrigger aria-label="Rainfall analysis type"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="single">Single rainfall source</SelectItem><SelectItem value="compare">Compare rainfall sources</SelectItem></SelectContent></Select></div><div><Label>Precipitation source</Label><Select value={source} onValueChange={setSource} disabled={busy || type === "compare"}><SelectTrigger aria-label="Precipitation source"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="POWER">POWER — corrected precipitation</SelectItem><SelectItem value="IMERG">GPM IMERG — Final Run v07</SelectItem></SelectContent></Select></div><div><Label>Geographic support</Label><Select value={spatial} onValueChange={setSpatial} disabled={busy}><SelectTrigger aria-label="Rainfall geographic support"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="point">Point / source cell at location A</SelectItem><SelectItem value="region">Region — reviewed numeric imports</SelectItem></SelectContent></Select></div><div className="grid grid-cols-2 gap-2"><div><Label htmlFor="rain-start">Rainfall start year</Label><Input id="rain-start" type="number" value={start} min={1998} max={2025} disabled={busy} onChange={e => setStart(e.target.value)} /></div><div><Label htmlFor="rain-end">Rainfall end year</Label><Input id="rain-end" type="number" value={end} min={1998} max={2025} disabled={busy} onChange={e => setEnd(e.target.value)} /></div></div></div>
     <p className="text-sm text-muted-foreground">{spatial === "point" ? `Location A: ${point.lat.toFixed(4)}°, ${point.lon.toFixed(4)}°. POWER and IMERG estimate different native-cell footprints; this is not a common-area or rain-gauge comparison.` : "Regional series require the same actual bounds, mask and documented area weighting. The suggested 102–104°E, 1–3°N study rectangle includes land and sea; it is not Johor’s administrative boundary."}</p>
     <div className="space-y-2 border-l-4 border-comparison-b bg-notice p-3 text-sm text-notice-foreground"><p>{access}</p>{checkedAt && <p className="text-xs">Catalogue checked {checkedAt}</p>}<Button size="sm" variant="outline" onClick={async () => { try { const r = await checkAccess(); setAccess(r.message); setCheckedAt(r.checkedAt); } catch { setAccess("NASA catalogue check failed; no IMERG values substituted."); } }}><RefreshCw />Check NASA access</Button><a className="ml-3 underline" href="https://giovanni.gsfc.nasa.gov/giovanni/#service=ArAvTs&data=GPM_3IMERGM_07_precipitation&starttime=2005-01-01T00:00:00Z&endtime=2024-12-31T23:59:59Z&bbox=102,1,104,3" target="_blank" rel="noreferrer">Giovanni study setup</a></div>
