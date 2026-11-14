@@ -16,6 +16,14 @@ export function inspectCsv(text: string): CsvInspection {
   return { headers, metadata, table: rows.slice(index + 1).filter(r => r.some(v => v.trim())), text, suggestedDate: headers.find(v => /^(time|date|month|datetime|timestamp)$/i.test(v)) ?? "", suggestedValue: headers.find(v => /precipitation|PRECTOTCORR/i.test(v) && !/quality|error|probability|uncertainty/i.test(v)) ?? "" };
 }
 export type ImportReview = { dateColumn: string; valueColumn: string; unit: RainUnit; sourceId: "POWER" | "IMERG"; datasetId: string; version: string; variable: string; support: Support; timeConvention: string; citation: string; sourceLink: string; fillValues: string; intervalConfirmed: boolean };
+export function readUnit(value: string): RainUnit | null {
+  const s = value.trim().toLowerCase().replace(/\s/g, "");
+  if (["mm/hr", "mm/hour", "mmh-1", "mmhr-1", "mm/hourly"].includes(s)) return "mm/hour";
+  if (["mm/day", "mmd-1", "mmday-1"].includes(s)) return "mm/day";
+  if (["kg/m2/s", "kg/m^2/s", "kgm-2s-1"].includes(s)) return "kg/m2/s";
+  if (["mm", "mm/month", "mmmonth-1"].includes(s)) return "mm";
+  return null;
+}
 export function safeSourceLink(value: string) {
   if (!value.trim()) return "";
   const u = new URL(value);
@@ -31,6 +39,9 @@ export async function importGiovanni(csv: CsvInspection, review: ImportReview): 
   if (review.sourceId === "POWER" && (review.variable !== "PRECTOTCORR" || review.datasetId !== "POWER PRECTOTCORR")) throw new Error("The regional POWER import must be actual POWER PRECTOTCORR, not MERRA-2 through Giovanni.");
   const di = csv.headers.indexOf(review.dateColumn), vi = csv.headers.indexOf(review.valueColumn);
   if (di < 0 || vi < 0 || di === vi || /quality|error|probability|uncertainty|phase/i.test(review.valueColumn)) throw new Error("Select a date and a rainfall value column, not a quality/error field.");
+  if (/T2M|temperature|humidity|wind|chlorophyll|solar/i.test(review.valueColumn)) throw new Error("The selected column is not a precipitation variable.");
+  const declaredUnit = Object.entries(csv.metadata).find(([k]) => /^(?:units?|data units?|measurement units?)$/i.test(k.replace(/^#\s*/, "")))?.[1];
+  if (declaredUnit && readUnit(declaredUnit) !== review.unit) throw new Error("The reviewed units conflict with, or cannot verify, the file's declared units. Correct the selection or provide a documented original-unit declaration.");
   if (!["mm/day", "mm/hour", "kg/m2/s", "mm"].includes(review.unit)) throw new Error("Identify the original units; unknown units are not converted.");
   if (review.sourceId === "IMERG" && review.support.mode === "point" && (review.support.bounds.east - review.support.bounds.west > 0.100001 || review.support.bounds.north - review.support.bounds.south > 0.100001)) throw new Error("IMERG point support must be a native 0.1° cell; larger areas are regional series.");
   const fills = new Set(["", "null", "nan", "na", "n/a", "-999", "-9999", "-9999.9", ...review.fillValues.split(",").map(v => v.trim().toLowerCase())]);

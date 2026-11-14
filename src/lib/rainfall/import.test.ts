@@ -20,4 +20,6 @@ describe("strict Giovanni monthly import", () => {
   it("rejects nonnumeric rainfall without treating it as zero", async () => await expect(importGiovanni(csv("2024-01-01,unknown,1"), review)).rejects.toThrow(/number/));
   it("rejects secret-bearing session links", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, sourceLink: "https://giovanni.gsfc.nasa.gov/?token=private" })).rejects.toThrow(/credential/));
   it("does not accept a large region as a native point cell", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, support: { ...review.support, mode: "point" } })).rejects.toThrow(/0.1/));
+  it("rejects reviewed units conflicting with actual declared units", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, unit: "mm/day" })).rejects.toThrow(/units conflict/));
+  it("rejects a temperature column even when selected manually", async () => await expect(importGiovanni(inspectCsv("time,T2M\n2024-01-01,25"), { ...review, valueColumn: "T2M" })).rejects.toThrow(/not a precipitation/));
 });

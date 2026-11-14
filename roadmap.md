@@ -1,9 +1,11 @@
 # Worldwide explorer
 ## Giovanni / IMERG monthly rainfall comparison
-- [ ] Verify a real Johor IMERG Final v07 retrieval or Giovanni export; record exact access limitations.
-- [ ] Implement strict import, canonical monthly totals, matched source metrics, complete-year descriptive trends and provenance.
-- [ ] Add source comparison, rainfall graphs, downloads and geography-safe point/region states.
-- [ ] Test scientific rules, live retrieval/import flows and mobile preview; do not publish.
+- [x] Verify official monthly v07 catalogue, variable and January 2024 granule; document 401 authentication limitation.
+- [ ] Verify a real Johor IMERG Final series and Giovanni-derived investigation (blocked: no owner Earthdata authorization or genuine Giovanni CSV supplied).
+- [x] Implement strict import, canonical monthly totals, matched source metrics, complete-year descriptive trends and provenance.
+- [x] Add source comparison, rainfall graphs, downloads and geography-safe point/region states.
+- [x] Test scientific rules, real POWER retrieval, synthetic-only import/comparison flow and mobile preview; do not publish.
+- Limits: no automatic IMERG numeric retrieval, installed genuine reference study or regional POWER numeric retrieval; region mode accepts documented matching numeric imports only. Imported metadata is user-reviewed, not independently source-authenticated. No IMERG raster, short-interval conversion or attenuation modelling.
 - Fisheries data work is deferred until the user says “Fisheries data problem”.
 ## Fisheries NASA-direct repair
 - [x] Replace NOAA runtime with independently loaded, checksum-verified app-hosted NASA bundles.
