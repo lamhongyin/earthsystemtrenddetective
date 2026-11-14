@@ -1,4 +1,8 @@
 # Worldwide explorer
+## Prepared January 2024 chlorophyll installation
+- [ ] Install exact-byte chlorophyll assets, validate schema and integrity, and preserve independently verified sources.
+- [ ] Default to chlorophyll January 2024; disclose historical-only coverage, native resolution and unavailable SST.
+- [ ] Verify world layer, native point/region histories, missing cells and downloads; leave unpublished.
 ## Giovanni / IMERG monthly rainfall comparison
 - [x] Verify official monthly v07 catalogue, variable and January 2024 granule; document 401 authentication limitation.
 - [ ] Verify a real Johor IMERG Final series and Giovanni-derived investigation (blocked: no owner Earthdata authorization or genuine Giovanni CSV supplied).
