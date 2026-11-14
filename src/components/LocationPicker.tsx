@@ -11,8 +11,8 @@ import { searchPlaces, type SearchPlace } from "@/lib/trend/search.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { SearchSignIn } from "./SearchSignIn";
 
-export type DraftPoint = { label: string; lat: string; lon: string; origin: Point["origin"]; country?: boolean };
-export const draftPoint = (p: Point): DraftPoint => ({ ...p, lat: String(p.lat), lon: String(p.lon) });
+export type DraftPoint = { label: string; lat: string; lon: string; origin: NonNullable<Point["origin"]>; country?: boolean };
+export const draftPoint = (p: Point): DraftPoint => ({ ...p, origin: p.origin ?? "coordinates", lat: String(p.lat), lon: String(p.lon) });
 export const numericPoint = (p: DraftPoint): Point => ({ ...p, lat: p.lat.trim() ? Number(p.lat) : NaN, lon: p.lon.trim() ? Number(p.lon) : NaN });
 export function LocationPicker({ id, point, onChange, disabled }: { id: "A" | "B"; point: DraftPoint; onChange: (p: DraftPoint) => void; disabled: boolean }) {
   const [query, setQuery] = useState("");

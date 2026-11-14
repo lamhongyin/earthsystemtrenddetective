@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 import { useEffect, useRef, useState } from "react";
 import { normalizeLongitude, validateCoords } from "@/lib/trend/config";
 import type { Point } from "@/lib/trend/comparison";
