@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 
 VERSION = "nasa-prepared-modis-v2"
 PRODUCTS = {
-    "sst": dict(collection="C1615905770-OB_DAAC", id="MODISA_L3m_SST", version="R2019.0", variable="sst", suffix="SST.sst", units="°C", doi="https://doi.org/10.5067/MODSA-MO4D9", title="MODIS Aqua monthly SST · 11 µm daytime"),
+    "sst": dict(collection="C1615905770-OB_DAAC", id="MODISA_L3m_SST", version="R2019.0", variable="sst", suffix="SST.sst", units="°C", doi="https://search.earthdata.nasa.gov/search/granules?p=C1615905770-OB_DAAC", title="MODIS Aqua monthly SST · 11 µm daytime"),
     "chlorophyll": dict(collection="C3380709133-OB_CLOUD", id="MODISA_L3m_CHL", version="2022.0", variable="chlor_a", suffix="CHL.chlor_a", units="mg/m³", doi="https://oceancolor.gsfc.nasa.gov/data/reprocessing/", title="MODIS Aqua monthly chlorophyll-a"),
 }
 POINTS = [(1.8, 104.5), (5.05, 110.05), (2.8, 101.0)]
@@ -48,7 +48,7 @@ def obtain(granule, cache, supplied):
         raise RuntimeError("NASA Earthdata access is not configured. Supply authenticated NASA NetCDF files with --input-dir or use secure Earthdata environment credentials.")
     import earthaccess
     earthaccess.login(strategy="environment", persist=False)
-    results = earthaccess.search_data(short_name=granule["dataset_id"].split()[0] if False else next(p["id"] for p in PRODUCTS.values() if p["collection"] == granule["collection_concept_id"]), granule_name=name, count=2)
+    results = earthaccess.search_data(short_name=next(p["id"] for p in PRODUCTS.values() if p["collection"] == granule["collection_concept_id"]), granule_name=name, count=2)
     if len(results) != 1:
         raise ValueError("Authenticated NASA discovery is ambiguous.")
     downloaded = earthaccess.download(results, str(cache), threads=1)

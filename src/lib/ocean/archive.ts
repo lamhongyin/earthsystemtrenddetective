@@ -23,7 +23,14 @@ export async function verifyAsset(bytes: ArrayBuffer, spec: z.infer<typeof asset
 async function manifest() {
   const r = await fetch("/fisheries/manifest.json", { cache: "no-cache" });
   if (!r.ok) throw new Error("No prepared NASA dataset is installed yet.");
-  return manifestSchema.parse(await r.json());
+  const raw = z.object({ schema: z.literal(OCEAN_VERSION), bundle: z.string(), createdAt: z.string().datetime(), sources: z.record(z.string(), z.unknown()) }).parse(await r.json());
+  const sources: Manifest["sources"] = {};
+  for (const code of ["sst", "chlorophyll"] as const) {
+    if (!raw.sources[code]) continue;
+    const parsed = manifestSchema.safeParse({ ...raw, sources: { [code]: raw.sources[code] } });
+    if (parsed.success) sources[code] = parsed.data.sources[code];
+  }
+  return { ...raw, sources };
 }
 async function readAsset(spec: z.infer<typeof asset>) {
   const r = await fetch(spec.path, { cache: "force-cache" }); if (!r.ok) throw new Error("Prepared asset is unavailable. Retry this source.");

@@ -1,9 +1,10 @@
 # Worldwide explorer
 ## Fisheries NASA-direct repair
-- [ ] Replace NOAA runtime with independently loaded, checksum-verified app-hosted NASA bundles.
-- [ ] Add reproducible bounded NASA preparation, quality rules, provenance, and atomic refresh.
+- [x] Replace NOAA runtime with independently loaded, checksum-verified app-hosted NASA bundles.
+- [x] Add bounded NASA preparation/import, quality checks, provenance, and atomic refresh code (real-file execution remains unverified).
 - [ ] Prepare a real common-month map and supported histories (requires authenticated NASA scientific downloads).
-- [ ] Test source isolation, coverage, histories, upstream outage resilience and desktop/mobile preview; do not publish.
+- [x] Test manifest isolation/integrity and honest empty-archive desktop/mobile preview with upstreams blocked; leave unpublished.
+- [ ] Verify real maps, values, histories/exports, saved-data outage resilience and native quality against NASA files (blocked by missing authenticated scientific downloads).
 ## PV Energy Yield
 - [x] Implement canonical GHI-to-electricity model, complete years, common-year statistics and numerical tests.
 - [x] Add shared-location system scenarios, monthly/annual graphs, assumptions and reproducibility exports.

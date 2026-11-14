@@ -13,6 +13,10 @@ describe("Prepared Fisheries archive rules", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(manifest({ chlorophyll: source("chlorophyll") })) )));
     expect((await preparedMetadata()).sources.map(s => s.id)).toEqual(["MODISA_L3m_CHL"]);
   });
+  it("keeps chlorophyll available when the SST manifest is corrupt", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(manifest({ sst: { broken: true }, chlorophyll: source("chlorophyll") })) )));
+    expect((await preparedMetadata()).sources.map(s => s.id)).toEqual(["MODISA_L3m_CHL"]);
+  });
   it("does not invent dates for an empty archive", () => { expect(defaultMonth([], "sst", "2026-11-14")).toBe(""); });
   it("uses the latest common complete month", () => { expect(defaultMonth([meta("sst", ["2024-01", "2024-03"]), meta("chlorophyll", ["2024-01", "2024-02"])], "sst", "2026-11-14")).toBe("2024-01"); });
   it("falls back to own latest complete month when there is no overlap", () => { expect(defaultMonth([meta("sst", ["2024-03"]), meta("chlorophyll", ["2024-02"])], "chlorophyll", "2026-11-14")).toBe("2024-02"); });
