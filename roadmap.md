@@ -5,6 +5,7 @@
 - [x] Test real values, histories, map controls, downloads and mobile preview; 201 tests pass, build OK, no publication.
 - Limits: January 2024 only, 1° overview and six prepared native point/region histories. Artificial icons only; no intensity layer, fish prediction or image export introduced.
 ## Monthly CCDF and ITU attenuation
+- [x] Remove sampled source-climatology columns from spatial CSV; harden remove/write/restore storage failures with accurate separate warnings. 40 focused checks and 207 total tests pass, real-file CSV/map/cache flow reverified, build OK; no publication.
 - [x] Add strict empirical monthly CCDF, paired samples, seasonal filtering and exports.
 - [x] Acquire and inspect official P.837-8/P.839-4 grids; verify pure pinned-model helpers against official satellite references and independent terrestrial equations.
 - [x] Replace the blocker with browser-local verified-file parsing, session-only data and optional on-device remember/remove.
