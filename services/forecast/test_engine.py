@@ -147,3 +147,37 @@ def test_api_auth_validation_and_real_job(monkeypatch):
         time.sleep(0.1)
     assert job["status"] == "completed"
     assert job["result"]["metrics"]["overall"]["count"] == 24
+
+
+def test_solar_zeros_bounds_and_deterministic_monthly_totals():
+    req=request(h=3,model="seasonal_naive",n=180)
+    req["parameter"]="ALLSKY_SFC_SW_DWN"
+    req["provenance"]={"community":"RE","normalizedUnit":"kWh/m²/day"}
+    for i,row in enumerate(req["observations"]):
+        row["value"]=0 if i%12==0 else 5+i*.001
+    assert postprocess(-1,"ALLSKY_SFC_SW_DWN") == 0
+    r=forecast(req)
+    assert r["history"][0]["value"] == 0
+    for p in r["predictions"]:
+        assert 0 <= p["lower"] <= p["prediction"] <= p["upper"]
+        assert p["monthlyTotal"] == p["prediction"]*p["days"]
+        assert p["monthlyTotalLower"] == p["lower"]*p["days"]
+        assert p["monthlyTotalUpper"] == p["upper"]*p["days"]
+    assert r["predictions"][0]["days"] == 31
+    assert r["predictions"][1]["days"] == 28
+    req["observations"][0]["value"]=-1
+    with pytest.raises(ValueError,match="negative solar"):
+        forecast(req)
+
+
+def test_solar_api_requires_verified_units_and_1984_start():
+    from app import Request
+    from pydantic import ValidationError
+    req=request();req["parameter"]="ALLSKY_SFC_SW_DWN"
+    with pytest.raises(ValidationError,match="validated RE"):
+        Request(**req)
+    req["provenance"]={"community":"RE","normalizedUnit":"kWh/m²/day"}
+    assert Request(**req).parameter == "ALLSKY_SFC_SW_DWN"
+    req["start"]="1981-01"
+    with pytest.raises(ValidationError):
+        Request(**req)
