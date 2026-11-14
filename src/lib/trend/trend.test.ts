@@ -13,7 +13,7 @@ describe("statistics match SciPy reference", () => {
       const s = analyzeAnnual(c.x, c.y);
       close(s.linearSlope, c.slope); close(s.rSquared, c.r2); close(s.kendallTau, c.tau);
       close(s.pValue, c.p); close(s.senSlope, c.sen); close(s.senCiLow, c.lo); close(s.senCiHigh, c.hi);
-      close(s.autocorr!, c.ac); c.pred.forEach((v: number, i: number) => close(s.predicted[i], v));
+      close(s.autocorr!, c.ac); c.pred.forEach((v: number, i: number) => close(s.predicted[i]!, v));
     });
   }
 });
@@ -31,11 +31,11 @@ describe("parsing and aggregation", () => {
   });
   it("leap-year weighted mean uses 29-day February", () => {
     const a = annualize(parsePowerMonthly(payload("T2M", 2024, 2024, (_y, m) => (m === 2 ? 0 : 10)), "T2M"), "weighted_mean");
-    close(a[0].value, (10 * 337) / 366);
+    close(a[0]!.value, (10 * 337) / 366);
   });
   it("excludes month 13, fill values, null and empty; drops incomplete years", () => {
     const p = payload("T2M", 2020, 2021, (y, m) => (y === 2021 && m === 2 ? null : y === 2020 && m === 3 ? "" : 5));
-    p.properties.parameter.T2M["202104"] = -999;
+    p.properties.parameter["T2M"]!["202104"] = -999;
     const monthly = parsePowerMonthly(p, "T2M");
     expect(monthly.length).toBe(21);
     expect(monthly.every((m) => m.value === 5)).toBe(true);

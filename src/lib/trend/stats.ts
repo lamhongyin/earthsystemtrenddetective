@@ -12,7 +12,7 @@ export const popStd = (a: number[]) => { const m = mean(a); return Math.sqrt(a.r
 export function linregress(x: number[], y: number[]) {
   const mx = mean(x), my = mean(y);
   let sxx = 0, syy = 0, sxy = 0;
-  for (let i = 0; i < x.length; i++) { const dx = x[i] - mx, dy = y[i] - my; sxx += dx * dx; syy += dy * dy; sxy += dx * dy; }
+  for (let i = 0; i < x.length; i++) { const dx = x[i]! - mx, dy = y[i]! - my; sxx += dx * dx; syy += dy * dy; sxy += dx * dy; }
   const slope = sxy / sxx;
   let r = sxx === 0 || syy === 0 ? 0 : sxy / Math.sqrt(sxx * syy);
   r = Math.max(-1, Math.min(1, r));
@@ -22,7 +22,7 @@ export function linregress(x: number[], y: number[]) {
 export function pearson(a: number[], b: number[]) {
   const ma = mean(a), mb = mean(b);
   let sab = 0, saa = 0, sbb = 0;
-  for (let i = 0; i < a.length; i++) { sab += (a[i] - ma) * (b[i] - mb); saa += (a[i] - ma) ** 2; sbb += (b[i] - mb) ** 2; }
+  for (let i = 0; i < a.length; i++) { sab += (a[i]! - ma) * (b[i]! - mb); saa += (a[i]! - ma) ** 2; sbb += (b[i]! - mb) ** 2; }
   return sab / Math.sqrt(saa * sbb);
 }
 
@@ -48,7 +48,7 @@ function kendallPExact(n: number, c: number): number {
   for (let j = 3; j <= n; j++) {
     const cum: number[] = []; let s = 0;
     for (const v of arr) { s += v; cum.push(s); }
-    if (j <= c) { const next = cum.slice(); for (let k = j; k <= c; k++) next[k] = cum[k] - cum[k - j]; arr = next; } else arr = cum;
+    if (j <= c) { const next = cum.slice(); for (let k = j; k <= c; k++) next[k] = cum[k]! - cum[k - j]!; arr = next; } else arr = cum;
   }
   const p = (2 * arr.reduce((t, v) => t + v, 0)) / factorial(n);
   return Math.min(1, Math.max(0, p));
@@ -78,12 +78,12 @@ export function kendalltau(x: number[], y: number[]) {
   const n = x.length;
   let con = 0, dis = 0;
   for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
-    const s = Math.sign(x[j] - x[i]) * Math.sign(y[j] - y[i]);
+    const s = Math.sign(x[j]! - x[i]!) * Math.sign(y[j]! - y[i]!);
     if (s > 0) con++; else if (s < 0) dis++;
   }
   const tot = (n * (n - 1)) / 2;
-  const [xt0, xt1, xt2] = tieStats(x);
-  const [yt0, yt1, yt2] = tieStats(y);
+  const [xt0, xt1, xt2] = tieStats(x) as [number, number, number];
+  const [yt0, yt1, yt2] = tieStats(y) as [number, number, number];
   if (xt0 === tot || yt0 === tot) return { tau: NaN, p: NaN };
   const cmd = con - dis;
   const tau = Math.max(-1, Math.min(1, cmd / Math.sqrt(tot - xt0) / Math.sqrt(tot - yt0)));
@@ -98,14 +98,14 @@ export function kendalltau(x: number[], y: number[]) {
   return { tau, p };
 }
 
-const median = (s: number[]) => { const n = s.length, h = Math.floor(n / 2); return n % 2 ? s[h] : (s[h - 1] + s[h]) / 2; };
+const median = (s: number[]) => { const n = s.length, h = Math.floor(n / 2); return n % 2 ? s[h]! : (s[h - 1]! + s[h]!) / 2; };
 // Python's round(): half to even
 export function pyRound(v: number) { const f = Math.floor(v), d = v - f; if (d > 0.5) return f + 1; if (d < 0.5) return f; return f % 2 === 0 ? f : f + 1; }
 const Z_975 = 1.959963984540054; // -norm.ppf(0.025)
 
 export function theilslopes(y: number[], x: number[]) {
   const slopes: number[] = [];
-  for (let i = 0; i < x.length; i++) for (let j = 0; j < x.length; j++) { const dx = x[i] - x[j]; if (dx > 0) slopes.push((y[i] - y[j]) / dx); }
+  for (let i = 0; i < x.length; i++) for (let j = 0; j < x.length; j++) { const dx = x[i]! - x[j]!; if (dx > 0) slopes.push((y[i]! - y[j]!) / dx); }
   slopes.sort((a, b) => a - b);
   const med = median(slopes);
   const ny = y.length, nt = slopes.length;
@@ -114,7 +114,7 @@ export function theilslopes(y: number[], x: number[]) {
   const sigma = Math.sqrt(sigsq);
   const Ru = Math.min(pyRound((nt + Z_975 * sigma) / 2), nt - 1);
   const Rl = Math.max(pyRound((nt - Z_975 * sigma) / 2) - 1, 0);
-  return { slope: med, low: slopes[Rl], high: slopes[Ru] };
+  return { slope: med, low: slopes[Rl]!, high: slopes[Ru]! };
 }
 
 export function analyzeAnnual(years: number[], values: number[], alpha = 0.05): TrendStats {
@@ -124,7 +124,7 @@ export function analyzeAnnual(years: number[], values: number[], alpha = 0.05): 
   const { tau, p } = kendalltau(years, values);
   const sen = theilslopes(values, years);
   const predicted = years.map((x) => reg.intercept + reg.slope * x);
-  const res = values.map((v, i) => v - predicted[i]);
+  const res = values.map((v, i) => v - predicted[i]!);
   let autocorr: number | null = null;
   if (res.length >= 4 && popStd(res.slice(0, -1)) > 1e-12 && popStd(res.slice(1)) > 1e-12) {
     const c = pearson(res.slice(0, -1), res.slice(1));

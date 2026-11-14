@@ -33,7 +33,7 @@ type Submitted = { param: ParameterDef; location: string; lat: number; lon: numb
 type Result = { meta: Submitted; monthly: MonthlyObservation[]; annual: AnnualObservation[]; stats: TrendStats };
 
 function Index() {
-  const [paramLabel, setParamLabel] = useState(PARAMETERS[0].label);
+  const [paramLabel, setParamLabel] = useState(PARAMETERS[0]!.label);
   const [location, setLocation] = useState<string>(LOCATIONS[0].label);
   const [customLat, setCustomLat] = useState("2.0442");
   const [customLon, setCustomLon] = useState("102.5689");
@@ -176,8 +176,8 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 function Results({ r }: { r: Result }) {
   const { meta, annual, monthly, stats } = r;
   const unit = meta.param.annualUnit;
-  const data = annual.map((a, i) => ({ year: a.year, value: a.value, fit: stats.predicted[i] }));
-  const hasGaps = annual.some((a, i) => i > 0 && a.year - annual[i - 1].year > 1);
+  const data = annual.map((a, i) => ({ year: a.year, value: a.value, fit: stats.predicted[i]! }));
+  const hasGaps = annual.some((a, i) => i > 0 && a.year - annual[i - 1]!.year > 1);
   const slopeUnit = `${unit}/year`;
   const slopeHint = meta.param.code === "RH2M" ? "Percentage points of relative humidity per year." : meta.param.code === "PRECTOTCORR" ? "Change in annual rainfall total (mm) per calendar year." : `Change in annual value per calendar year.`;
 
@@ -187,7 +187,7 @@ function Results({ r }: { r: Result }) {
         <dl className="mb-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 xl:grid-cols-3">
           <Meta k="Variable" v={`${meta.param.description} (${meta.param.code})`} />
           <Meta k="Location" v={`${meta.location} · ${meta.lat.toFixed(4)}, ${meta.lon.toFixed(4)}`} />
-          <Meta k="Complete years" v={`${annual[0].year}–${annual[annual.length - 1].year} (${annual.length} years)`} />
+          <Meta k="Complete years" v={`${annual[0]!.year}–${annual[annual.length - 1]!.year} (${annual.length} years)`} />
           <Meta k="Valid monthly observations" v={String(monthly.length)} />
           <Meta k="Spatial basis" v="Grid-cell estimate" />
         </dl>
