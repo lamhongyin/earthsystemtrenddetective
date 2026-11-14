@@ -44,3 +44,4 @@ use the editor.
 - Air Quality uses a separate GEOS-CF v2 public Zarr Python adapter in the existing hosted service; authenticate its app proxy with the server-only service credential because Workers cannot execute xarray.
 - PM2.5 indices use versioned EPA decimal truncation/half-up rounding and strictly complete UTC windows; keep the air-quality scientific tests passing to prevent incomplete or model-only values being labeled official AQI.
 - Extract A/B GEOS-CF points as one verified snapshot with time and selected-chunk identities before/after reads; bounded point caches key those identities so changing latest runs cannot silently mix results.
+- Forecast hosting targets a free sleeping single instance: bind $PORT, lazy-load air-quality libraries, and surface cold-start/restart job loss honestly instead of retrying.
