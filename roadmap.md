@@ -3,7 +3,7 @@
 - [x] Add verified public GEOS-CF point adapter and strict versioned PM2.5 AQI calculations.
 - [x] Add shared-location Air Quality views, comparisons, metadata and exports.
 - [x] Test actual NASA point extraction, scientific safeguards and desktop/mobile setup states.
-- [ ] Deploy/connect the Python adapter (requires the user's HTTPS hosting address).
+- [x] Deploy/connect the Python adapter (Render Free; live Air Quality verified through the app 2026-11-14).
 ## Solar extension
 - [x] Add validated GHI units, RE requests, solar year limits and isolated cache metadata.
 - [x] Integrate monthly solar charts, annual totals, A/B comparisons and exports.
@@ -12,7 +12,7 @@
 - [x] Implement pinned Python models, chronological backtests, calibrated intervals, and job API.
 - [x] Add Forecast tab, snapshot-safe progress, monthly charts, metrics, tables, and exports.
 - [x] Test scientific safeguards and real NASA forecasting; document hosting and deployment status.
-- [ ] Connect a separately hosted Python service (requires hosting URL and service credential).
+- [x] Connect a separately hosted Python service (live T2M forecast verified through the app 2026-11-14).
 
 - [x] Configure Google Maps and protected place search.
 - [x] Add world selection, presets, coordinates, and shared modes.
