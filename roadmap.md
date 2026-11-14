@@ -1,4 +1,10 @@
 # Worldwide explorer
+## Global Spatial Map
+- [ ] Stage 1: verify NASA temperature slices, worldwide rendering, same-slice samples, history and A/B integration.
+- [ ] Stage 2: prepare and independently verify a native-resolution temperature Sen slope product.
+- [ ] Stage 3: verify and enable additional environmental variables individually.
+- [ ] Stage 4: verify period averages, animation and feasible grid outlines.
+- [ ] Validate real-data desktop/mobile preview; leave production unchanged.
 ## Air Quality extension
 - [x] Add verified public GEOS-CF point adapter and strict versioned PM2.5 AQI calculations.
 - [x] Add shared-location Air Quality views, comparisons, metadata and exports.
