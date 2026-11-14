@@ -34,7 +34,7 @@
     2023,
     2024
   ],
-  "retrievedAt": "2026-11-14T14:02:28.703Z",
+  "retrievedAt": "2026-11-14T14:08:23.963Z",
   "annualAggregation": "time: mean-weighted",
   "completeness": "20 of 20 finite annual source values; source annual completeness inherits NASA aggregation",
   "estimator": "Median pairwise slope against actual calendar years × 10 (Sen slope per decade)",
