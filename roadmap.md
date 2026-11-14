@@ -6,7 +6,8 @@
 - [x] Verify world layer, native point/region histories, missing cells and downloads; leave unpublished.
 ## Giovanni / IMERG monthly rainfall comparison
 - [x] Verify official monthly v07 catalogue, variable and January 2024 granule; document 401 authentication limitation.
-- [ ] Verify a real Johor IMERG Final series and Giovanni-derived investigation (blocked: no owner Earthdata authorization or genuine Giovanni CSV supplied).
+- [x] Install and verify the owner-supplied genuine Giovanni IMERG CSV (SHA-256 ad515eae…, 240 valid months 2005-01–2024-12, region 102–104°E 1–3°N) as a bundled one-click demonstration with original-CSV download; verified in a fresh browser.
+- [ ] Verify automatic IMERG retrieval for other periods/regions (blocked: no owner Earthdata authorization).
 - [x] Implement strict import, canonical monthly totals, matched source metrics, complete-year descriptive trends and provenance.
 - [x] Add source comparison, rainfall graphs, downloads and geography-safe point/region states.
 - [x] Test scientific rules, real POWER retrieval, synthetic-only import/comparison flow and mobile preview; do not publish.
