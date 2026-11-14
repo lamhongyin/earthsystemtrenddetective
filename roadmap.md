@@ -1,4 +1,9 @@
 # Worldwide explorer
+## Monthly CCDF and ITU attenuation
+- [ ] Add strict empirical monthly CCDF, paired samples, seasonal filtering and exports.
+- [ ] Acquire and verify official P.837-8/P.839-4 spatial inputs and pinned P.618-14/P.530-19 calculations.
+- [ ] Implement independent submitted engineering scenarios, filled maps, point curves and reproducible exports.
+- [ ] Run numerical and real-data visitor checks; leave unpublished and report dependencies.
 ## Prepared January 2024 chlorophyll installation
 - Verified sample only: 157 tests pass; 33,211 valid overview cells, 31,589 transparent cells; all six native presets and CSV/JSON verified. SST and longer histories remain unavailable; original NetCDF is not included, so preparation evidence is supplied provenance, not a new raw-source reconstruction.
 - [x] Install exact-byte chlorophyll assets, validate schema and integrity, and preserve independently verified sources.
