@@ -1,4 +1,9 @@
 # Worldwide explorer
+## Environmental Hotspot Explorer
+- [ ] Prepare verified annual numeric temperature/rainfall arrays and provenance.
+- [ ] Implement completeness, OLS, area-weighted thresholds and four-edge connected areas with scientific tests.
+- [ ] Add worldwide/regional/drawn-area Hotspots map, ranked evidence, shared A/B and exports.
+- [ ] Verify real NASA calculations, complete world coverage and desktop/mobile preview; do not publish.
 ## Global Spatial Map
 - [x] Stage 1: verify NASA temperature slices, worldwide rendering, same-slice samples, history and A/B integration.
 - [x] Stage 2: prepare and independently verify a native-resolution temperature Sen slope product.
