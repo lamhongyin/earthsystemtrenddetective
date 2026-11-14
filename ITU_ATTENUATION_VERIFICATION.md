@@ -33,3 +33,5 @@ No evidence of redistribution permission was supplied or found in the supplement
 
 ## Not complete
 No filled contours, map grids, point curves, map margin, endpoint investigation, published spatial manifest or spatial exports. No scientific map claim is made. After permission, implement verified compact asset preparation, interpolation/seam tests, worker/grid, contours, geometry controls and spatial exports, then independently validate actual visitor flows. No new Python backend, paid resource or publication.
+## Visitor verification
+All 194 tests pass. Fresh browser loaded genuine IMERG demonstration: N=240, 241 exported thresholds including zero, strict maximum tail zero. January uses N=20, 5% increments; threshold 200 mm gives 9/20=45%. Log display omits only zero. Period edits preserve original submitted CCDF. Satellite p=2% accepted; switching to terrestrial rejects retained p=2%. Calculation and submitted-request export disclose unavailable inputs. Desktop charts are side-by-side; 390px mobile stacks without horizontal overflow. No page errors. Latest preview build OK.
