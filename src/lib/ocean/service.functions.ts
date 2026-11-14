@@ -1,6 +1,8 @@
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
-const target = z.object({ lat: z.number(), lon: z.number(), bounds: z.object({ south: z.number(), north: z.number(), west: z.number(), east: z.number() }).optional() });
-export const fetchOceanMetadata = createServerFn({ method: "GET" }).handler(async () => { try { const { oceanMetadata } = await import("./source.server"); return { ok: true as const, sources: await Promise.all([oceanMetadata("sst"), oceanMetadata("chlorophyll")]) }; } catch (e) { return { ok: false as const, error: e instanceof Error ? e.message : "Ocean metadata unavailable." }; } });
-export const fetchOceanHistory = createServerFn({ method: "POST" }).inputValidator(z.object({ target, start: z.number().int(), end: z.number().int() }).parse).handler(async ({ data }) => { try { const { oceanHistory } = await import("./source.server"); return { ok: true as const, records: await oceanHistory(data.target, data.start, data.end) }; } catch (e) { return { ok: false as const, error: e instanceof Error ? e.message : "Ocean histories unavailable." }; } });
-export const fetchOceanImage = createServerFn({ method: "POST" }).inputValidator(z.object({ code: z.enum(["sst", "chlorophyll"]), month: z.string().regex(/^\d{4}-\d{2}$/) }).parse).handler(async ({ data }) => { try { const { oceanImage } = await import("./source.server"); return { ok: true as const, layer: await oceanImage(data.code, data.month) }; } catch (e) { return { ok: false as const, error: e instanceof Error ? e.message : "Ocean image unavailable." }; } });
+// Browser-only prepared asset facade: no upstream ocean service or credential.
+import { preparedHistory, preparedImage, preparedMetadata, preparedPoint } from "./archive";
+import type { OceanCode, OceanTarget } from "./data";
+const failure = (e: unknown) => ({ ok: false as const, error: e instanceof Error ? e.message : "Prepared NASA data unavailable." });
+export async function fetchOceanMetadata() { try { return { ok: true as const, ...await preparedMetadata() }; } catch (e) { return failure(e); } }
+export async function fetchOceanImage({ data }: { data: { code: OceanCode; month: string } }) { try { return { ok: true as const, layer: await preparedImage(data.code, data.month) }; } catch (e) { return failure(e); } }
+export async function fetchOceanHistory({ data }: { data: { target: OceanTarget; start: number; end: number } }) { try { return { ok: true as const, records: await preparedHistory(data.target, data.start, data.end) }; } catch (e) { return failure(e); } }
+export async function fetchOceanPoint(code: OceanCode, month: string, lat: number, lon: number) { try { return { ok: true as const, records: [await preparedPoint(code, month, lat, lon)] }; } catch (e) { return failure(e); } }
