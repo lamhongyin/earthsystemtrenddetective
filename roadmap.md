@@ -1,4 +1,9 @@
 # Worldwide explorer
+## Fisheries Environment Explorer
+- [ ] Verify public NASA/NOAA ocean metadata, efficient imagery and bounded numeric requests.
+- [ ] Add separate ocean decoding, monthly aggregation, coverage and descriptive seasonal trend tests.
+- [ ] Implement ocean maps, point/region histories, matched A/B comparison and provenance exports.
+- [ ] Verify real ocean data, existing features and desktop/mobile preview; leave unpublished.
 ## Environmental Hotspot Explorer
 - [x] Prepare verified annual numeric temperature/rainfall arrays and provenance.
 - [x] Implement completeness, OLS, area-weighted thresholds and four-edge connected areas with scientific tests.
