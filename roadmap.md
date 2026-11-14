@@ -1,9 +1,14 @@
 # Worldwide explorer
+## PV Energy Yield
+- [x] Implement canonical GHI-to-electricity model, complete years, common-year statistics and numerical tests.
+- [x] Add shared-location system scenarios, monthly/annual graphs, assumptions and reproducibility exports.
+- [x] Verify real NASA calculations, A/B, immutable results and phone layout; leave unpublished.
+- Limits: horizontal assumed-PR estimator only; no tilt, tracking, floating or explicit thermal/inverter model. NASA monthly daily completeness inherited.
 ## Fisheries Environment Explorer
-- [ ] Verify public NASA/NOAA ocean metadata, efficient imagery and bounded numeric requests.
-- [ ] Add separate ocean decoding, monthly aggregation, coverage and descriptive seasonal trend tests.
-- [ ] Implement ocean maps, point/region histories, matched A/B comparison and provenance exports.
-- [ ] Verify real ocean data, existing features and desktop/mobile preview; leave unpublished.
+- [x] Verify public NASA/NOAA ocean metadata, efficient imagery and bounded numeric requests.
+- [x] Add separate ocean decoding, monthly aggregation, coverage and descriptive seasonal trend tests.
+- [x] Implement ocean maps, point/region histories, matched A/B comparison and provenance exports.
+- [ ] Complete final corrected ocean A/B and region validation (blocked by NOAA temporary 503 throttling; both maps and initial point histories verified).
 ## Environmental Hotspot Explorer
 - [x] Prepare verified annual numeric temperature/rainfall arrays and provenance.
 - [x] Implement completeness, OLS, area-weighted thresholds and four-edge connected areas with scientific tests.

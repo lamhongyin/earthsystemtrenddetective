@@ -1,0 +1,21 @@
+import { describe, it, expect } from "vitest";
+import { calculatePV, monthYield, pvComparison, pvStats, validatePV } from "./data";
+import { solarUnitConversion } from "@/lib/trend/solar";
+const settings = { capacity: 5, pr: 80, scenario: "residential" };
+const rows = (start: number, end: number) => Array.from({ length: (end-start+1)*12 }, (_, i) => ({ year: start+Math.floor(i/12), date: `${start+Math.floor(i/12)}-${String(i%12+1).padStart(2,"0")}-01`, days: 30, value: 4 }));
+describe("PV fixed horizontal PR model", () => {
+  it("February 2024 gives 116 irradiation and 464 kWh", () => { const r=monthYield(4,2024,2,settings);expect(r.irradiation).toBe(116);expect(r.energy).toBe(464); });
+  it("February 2023 gives 448 kWh",()=>expect(monthYield(4,2023,2,settings).energy).toBe(448));
+  it("2024 gives 5856 and 1171.2 specific yield",()=>{const r=calculatePV(rows(2024,2024),2024,2024,settings).annual[0];expect(r?.energy).toBe(5856);expect(r?.specific).toBe(1171.2);});
+  it("2023 gives 5840",()=>expect(calculatePV(rows(2023,2023),2023,2023,settings).annual[0]?.energy).toBe(5840));
+  it("capacity doubles electricity but not specific yield",()=>{ const a=calculatePV(rows(2024,2024),2024,2024,settings).annual[0],b=calculatePV(rows(2024,2024),2024,2024,{...settings,capacity:10}).annual[0];expect(b?.energy).toBe((a?.energy??0)*2);expect(b?.specific).toBe(a?.specific); });
+  it("preserves zero",()=>expect(monthYield(0,2024,2,settings).energy).toBe(0));
+  it("missing and fill remain missing",()=>{expect(monthYield(null,2024,2,settings).energy).toBeNull();expect(monthYield(-999,2024,2,settings).energy).toBeNull();});
+  it("requires all twelve months",()=>{const d=calculatePV(rows(2024,2024).slice(1),2024,2024,settings);expect(d.annual[0]?.count).toBe(11);expect(d.annual[0]?.energy).toBeNull();});
+  it("rejects invalid capacity",()=>{for(const capacity of [0,-1,Infinity,NaN,1000001])expect(()=>validatePV({...settings,capacity})).toThrow();});
+  it("rejects invalid performance ratio",()=>{for(const pr of [0,-1,100.1,Infinity,NaN])expect(()=>validatePV({...settings,pr})).toThrow();});
+  it("rejects unverified flux units",()=>expect(()=>solarUnitConversion("W/m²")).toThrow());
+  it("rejects floating scenario",()=>expect(()=>validatePV({...settings,scenario:"floating"})).toThrow());
+  it("matches only complete common years with actual gaps",()=>{const a=calculatePV(rows(2005,2024).filter(r=>r.year!==2010),2005,2024,settings),b=calculatePV(rows(2005,2024).filter(r=>r.year!==2011),2005,2024,settings);const c=pvComparison(a,b);expect(c.years).toHaveLength(18);expect(c.years).not.toContain(2010);expect(c.years).not.toContain(2011);});
+  it("requires eight complete annual observations for statistics",()=>expect(pvStats([{year:2024,value:5856}]).stats).toBeNull());
+});
