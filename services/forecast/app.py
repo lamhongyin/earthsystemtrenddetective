@@ -11,7 +11,6 @@ from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
 from engine import VERSION, forecast
-from air_quality import extract
 
 class Observation(BaseModel):
     month: str = Field(pattern=r"^\d{4}-(0[1-9]|1[0-2])$")
@@ -50,8 +49,8 @@ executor = ThreadPoolExecutor(max_workers=1)
 lock = threading.Lock()
 jobs = {}
 TTL = 3600
-MAX_JOBS = 32
-MAX_ACTIVE = 8
+MAX_JOBS = 12
+MAX_ACTIVE = 3
 
 def authorize(authorization: str = Header(default="")):
     token = os.environ.get("FORECAST_SERVICE_TOKEN")
@@ -74,6 +73,7 @@ class AirRequest(BaseModel):
 
 @app.post("/air-quality", dependencies=[Depends(authorize)])
 def air_quality(request: AirRequest):
+    from air_quality import extract  # lazy: keeps forecasting under free-plan memory
     try:
         return {"results": extract([p.model_dump() for p in request.points], request.horizon)}
     except ValueError as e:

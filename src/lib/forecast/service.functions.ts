@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { minYearFor } from "@/lib/trend/config";
 import type { ForecastJob } from "./types";
+import { hostingMessage } from "./hosting";
 const month = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
 const settings = z.object({
   parameter: z.enum(["T2M", "PRECTOTCORR", "RH2M", "WS10M", "ALLSKY_SFC_SW_DWN"]), latitude: z.number().finite().min(-90).max(90), longitude: z.number().finite().min(-180).max(180),
@@ -15,12 +16,21 @@ export const forecastService = createServerFn({ method: "POST" }).inputValidator
   if (!base || !token) return { ok: false, error: "Forecast training service is not connected. A separately hosted Python service and its service credential are required; historical analysis remains available." };
   let url: URL;
   try { url = new URL(base); if (url.protocol !== "https:") throw new Error(); } catch { return { ok: false, error: "Forecast service requires a valid HTTPS hosting address." }; }
-  if (data.action === "check") return { ok: true, jobJson: JSON.stringify({ id: "", status: "queued" }) };
+  if (data.action === "check") {
+    const health = new URL(url); health.pathname = `${health.pathname.replace(/\/$/, "")}/health`; health.search = ""; health.hash = "";
+    try {
+      const r = await fetch(health, { signal: AbortSignal.timeout(75_000) });
+      if (!r.ok) return { ok: false, error: hostingMessage("check", r.status) ?? `Forecast service health check failed (${r.status}).` };
+      return { ok: true, jobJson: JSON.stringify({ id: "", status: "queued" }) };
+    } catch { return { ok: false, error: hostingMessage("check", "timeout")! }; }
+  }
   url.pathname = `${url.pathname.replace(/\/$/, "")}/jobs${data.action === "submit" ? "" : `/${data.id}`}`;
   url.search = ""; url.hash = "";
   try {
     const response = await fetch(url, { method: data.action === "submit" ? "POST" : data.action === "cancel" ? "DELETE" : "GET", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, ...(data.action === "submit" ? { body: JSON.stringify(data.request) } : {}) });
     if (!response.ok) {
+      const hosted = hostingMessage(data.action, response.status);
+      if (hosted) return { ok: false, error: hosted };
       let detail = "Forecast service rejected the request.";
       try { const error = await response.json() as { detail?: unknown }; if (typeof error.detail === "string") detail = error.detail; } catch { /* do not expose upstream HTML */ }
       return { ok: false, error: `Forecast service (${response.status}): ${detail}` };

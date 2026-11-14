@@ -53,3 +53,7 @@ EPA calculation verified against **EPA-403/B-26-003, May 2026**, table 6: PM2.5 
 Run `python -m unittest discover -s services/forecast -p test_air_quality.py -v` with dependencies installed. Real NASA selected-point extraction was tested locally for Johor Bahru and London (120 hourly values each), not through a deployed host. See roadmap for browser checks and remaining deployment blocker.
 
 See the app's roadmap and final implementation report for executed tests/live NASA checks. Local Python tests do not establish that a separate host is deployed. Until an HTTPS service URL and credential are configured, published forecasting is unavailable and historical analysis remains functional.
+
+## Free Render plan
+
+Render → New → Web Service → your GitHub repo; Language Docker, Root Directory `services/forecast`, Dockerfile `./Dockerfile`, Instance type **Free**, Health Check Path `/health`, env `FORECAST_SERVICE_TOKEN` = the same value saved in Lovable. The container binds Render's `$PORT` (fallback 8000). Free limits: 512 MB RAM (air-quality libraries load only on the first Air Quality request; at most 3 active / 12 cached jobs), sleep after ~15 idle minutes with ~30–60 s cold start, and every sleep/restart erases in-memory jobs. The app waits up to 75 s on `/health`, shows a "waking up" message with Retry, and reports lost jobs as a restart requiring resubmission; it never retries automatically or fabricates results.
