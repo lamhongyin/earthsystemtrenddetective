@@ -41,3 +41,6 @@ use the editor.
 - Forecast results, charts and exports use immutable submitted monthly snapshots; process independent fits sequentially and ignore or cancel stale jobs to bound work and prevent mislabeled results.
 - Solar normalization lives in `src/lib/trend/solar.ts`; accept verified energy units, reject ambiguous flux units, preserve zeros and flag negatives so historical comparisons and forecasts share one canonical monthly target.
 - NASA cache identities include community, monthly resolution and canonical-unit version; solar uses RE while weather retains AG to prevent incompatible source/unit reuse.
+- Air Quality uses a separate GEOS-CF v2 public Zarr Python adapter in the existing hosted service; authenticate its app proxy with the server-only service credential because Workers cannot execute xarray.
+- PM2.5 indices use versioned EPA decimal truncation/half-up rounding and strictly complete UTC windows; keep the air-quality scientific tests passing to prevent incomplete or model-only values being labeled official AQI.
+- Extract A/B GEOS-CF points as one verified snapshot with time and selected-chunk identities before/after reads; bounded point caches key those identities so changing latest runs cannot silently mix results.

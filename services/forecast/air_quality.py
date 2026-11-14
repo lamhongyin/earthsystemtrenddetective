@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP
 import hashlib
-import json
+from collections import OrderedDict
 import math
 import threading
 import requests
@@ -20,6 +20,16 @@ BRACKETS = [("0", "9", 0, 50, "Good"), ("9.1", "35.4", 51, 100, "Moderate"),
             ("125.5", "225.4", 201, 300, "Very Unhealthy"),
             ("225.5", "325.4", 301, 500, "Hazardous")]
 gate = threading.BoundedSemaphore(2)
+cache_lock = threading.Lock()
+point_cache = OrderedDict()
+
+def object_identity(key):
+    response = requests.head(STORE + "/" + key, timeout=30)
+    response.raise_for_status()
+    etag = response.headers.get("ETag")
+    if not etag:
+        raise ValueError("NASA source object identity unavailable; safe extraction cannot be verified.")
+    return etag
 
 def iso(t):
     return t.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
@@ -109,9 +119,18 @@ def extract(points, horizon, now=None):
                 if any(t.minute != 30 or t.second != 0 for t in dates) or any(b-a != timedelta(hours=1) for a,b in zip(dates, dates[1:])):
                     raise ValueError("NASA hourly midpoint coverage changed; temporal verification required.")
                 results = []
+                objects = {"time/0": object_identity("time/0")}
+                chunks = meta["metadata"]["pm25_rh35/.zarray"]["chunks"]
+                if chunks[0] != len(dates) or chunks[1] != 1:
+                    raise ValueError("NASA chunk layout changed; source consistency verification required.")
                 for p in points:
                     iy, ix = nearest(ds.lat.values, ds.lon.values, p["latitude"], p["longitude"])
-                    values = ds.pm25_rh35.isel(lev=0, lat=iy, lon=ix).values
+                    chunk = f"pm25_rh35/0.0.{iy // chunks[2]}.{ix // chunks[3]}"
+                    objects[chunk] = object_identity(chunk)
+                    cache_key = (identity["metadataSha256"], objects["time/0"], objects[chunk], iy, ix)
+                    with cache_lock:
+                        cached = point_cache.get(cache_key)
+                    values = cached.copy() if cached is not None else ds.pm25_rh35.isel(lev=0, lat=iy, lon=ix).values.copy()
                     fill = meta["metadata"]["pm25_rh35/.zarray"].get("fill_value")
                     rows = []
                     for t, v in zip(dates, values):
@@ -128,17 +147,22 @@ def extract(points, horizon, now=None):
                         warnings.append("Invalid or missing concentrations excluded; strict 24-hour indices require complete coverage.")
                     results.append(dict(source="NASA GEOS-CF", dataType="forecast", modelVersion="GEOS-CF v2", collection=COLLECTION,
                         snapshotId=identity["metadataSha256"] + ":" + iso(dates[0]), initializedAt=None, retrievedAt=iso(now),
-                        sourceUrl=STORE, sourceObjects=identity, requestedPoint=p, gridPoint=dict(latitude=float(ds.lat.values[iy]), longitude=float(ds.lon.values[ix])),
+                        sourceUrl=STORE, sourceObjects={**identity, "timeETag": objects["time/0"], "pointChunkETag": objects[chunk]}, requestedPoint=p, gridPoint=dict(latitude=float(ds.lat.values[iy]), longitude=float(ds.lon.values[ix])),
                         variable="pm25_rh35", variableDefinition=attrs["long_name"], surfaceLayer=72, unit="µg/m³", originalUnit=attrs["units"], conversionFactor=factor,
                         indexStandard=STANDARD, indexScope="PM2.5 only", completenessPolicy="24 unique contiguous valid one-hour averages; UTC calendar; decimal truncation and half-up index rounding",
                         temporalDefinition="Hourly averages centered at source timestamps (GEOS-CF FileSpec v2 §4)", documentation=DOC,
                         coverageStart=rows[0]["intervalStart"], coverageEnd=rows[-1]["intervalEnd"], requestedHours=horizon, availableFutureHours=len(forecast_rows),
                         forecastWindowStart=iso(start), forecastWindowEnd=iso(stop), hours=rows, windows24h=windows, daily=daily, warnings=warnings))
+                    with cache_lock:
+                        point_cache[cache_key] = values.copy()
+                        while len(point_cache) > 32:
+                            point_cache.popitem(last=False)
                 after_times = ds.time.values.copy()
             _, after = manifest()
             # Check time object too: an in-place rollover can retain identical array metadata.
             with xr.open_zarr(fsspec.get_mapper(STORE, timeout=30), consolidated=True, chunks=None, mask_and_scale=False) as verify:
                 stable = np.array_equal(times, verify.time.values)
-            if identity == after and np.array_equal(times, after_times) and stable:
+            objects_stable = all(object_identity(k) == v for k, v in objects.items())
+            if identity == after and np.array_equal(times, after_times) and stable and objects_stable:
                 return results
         raise ValueError("NASA forecast changed during extraction; retry for a consistent run.")
