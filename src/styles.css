@@ -8,6 +8,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -87,6 +88,16 @@
 }
 
 :root {
+  --spatial-value-0: #243d80;
+  --spatial-value-1: #339ac0;
+  --spatial-value-2: #e6eee9;
+  --spatial-value-3: #f2c65a;
+  --spatial-value-4: #b73542;
+  --spatial-trend-0: #265a99;
+  --spatial-trend-1: #77b7cf;
+  --spatial-trend-2: #f0eee5;
+  --spatial-trend-3: #e5a76b;
+  --spatial-trend-4: #ac344d;
   --aqi-good: oklch(0.4 0.12 145);
   --aqi-moderate: oklch(0.45 0.10 90);
   --aqi-sensitive: oklch(0.48 0.14 55);
@@ -202,3 +213,8 @@
 
 .google-auth { background: var(--google-auth-background); border-color: var(--google-auth-border); color: var(--google-auth-text); gap: 10px; padding-inline: 12px; }
 .google-auth svg { width: 18px; height: 18px; }
+.spatial-map { z-index: 0; background: var(--muted); }
+.spatial-marker { background: var(--primary); color: var(--primary-foreground); border: 2px solid var(--card); border-radius: 50%; text-align: center; font-weight: bold; line-height: 24px; }
+.spatial-marker-b { background: var(--comparison-b); }
+.spatial-legend-value { background: linear-gradient(to right, var(--spatial-value-0), var(--spatial-value-1), var(--spatial-value-2), var(--spatial-value-3), var(--spatial-value-4)); }
+.spatial-legend-trend { background: linear-gradient(to right, var(--spatial-trend-0), var(--spatial-trend-1), var(--spatial-trend-2), var(--spatial-trend-3), var(--spatial-trend-4)); }
