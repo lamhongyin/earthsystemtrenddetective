@@ -8,10 +8,11 @@ const settings = z.object({
   model: z.enum(["auto", "seasonal_naive", "gradient_boosted"]), observations: z.array(z.object({ month, value: z.number().finite() })).min(1).max(600),
   provenance: z.record(z.unknown()),
 }).refine(d => d.start <= d.end && Number(d.start.slice(0, 4)) >= 1981 && Number(d.end.slice(0, 4)) <= 2025, "Training years must be ordered between 1981 and 2025.");
-const command = z.discriminatedUnion("action", [z.object({ action: z.literal("submit"), request: settings }), z.object({ action: z.literal("poll"), id: z.string().regex(/^[A-Za-z0-9_-]{20,64}$/) }), z.object({ action: z.literal("cancel"), id: z.string().regex(/^[A-Za-z0-9_-]{20,64}$/) })]);
+const command = z.discriminatedUnion("action", [z.object({ action: z.literal("check") }), z.object({ action: z.literal("submit"), request: settings }), z.object({ action: z.literal("poll"), id: z.string().regex(/^[A-Za-z0-9_-]{20,64}$/) }), z.object({ action: z.literal("cancel"), id: z.string().regex(/^[A-Za-z0-9_-]{20,64}$/) })]);
 export const forecastService = createServerFn({ method: "POST" }).inputValidator((input: unknown) => command.parse(input)).handler(async ({ data }): Promise<{ ok: true; job: ForecastJob } | { ok: false; error: string }> => {
   const base = process.env['FORECAST_SERVICE_URL'], token = process.env['FORECAST_SERVICE_TOKEN'];
   if (!base || !token) return { ok: false, error: "Forecast training service is not connected. A separately hosted Python service and its service credential are required; historical analysis remains available." };
+  if (data.action === "check") return { ok: true, job: { id: "", status: "queued" } };
   let url: URL;
   try { url = new URL(base); if (url.protocol !== "https:") throw new Error(); } catch { return { ok: false, error: "Forecast service requires a valid HTTPS hosting address." }; }
   url.pathname = `${url.pathname.replace(/\/$/, "")}/jobs${data.action === "submit" ? "" : `/${data.id}`}`;
