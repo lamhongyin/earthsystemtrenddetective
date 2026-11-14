@@ -24,7 +24,7 @@ export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, com
   const ctx = palette.getContext("2d"); if (!ctx) return;
   const gradient = ctx.createLinearGradient(0, 0, 255, 0); stops.forEach((color, i) => gradient.addColorStop(i / 4, color));
   ctx.fillStyle = gradient; ctx.fillRect(0, 0, 256, 1); const colors = ctx.getImageData(0, 0, 256, 1).data;
-  class Tiles extends L.GridLayer { createTile(coords: L.Coords) {
+  class Tiles extends L.GridLayer { override createTile(coords: L.Coords) {
    const tile = document.createElement("canvas"); tile.width = 256; tile.height = 256;
    const context = tile.getContext("2d"); if (!context) return tile;
    const image = context.createImageData(256, 256);
