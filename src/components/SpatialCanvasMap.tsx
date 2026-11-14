@@ -2,7 +2,8 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import { cellAt, type Raster } from "@/lib/spatial/data";
 import type { Point } from "@/lib/trend/comparison";
-export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, compare, onPick, view, grid }: { raster: Raster | null; opacity: number; low: number; high: number; a: Point; b: Point; compare: boolean; onPick: (lat: number, lon: number) => void; view: string; grid: boolean }) {
+import type { Bounds } from "@/lib/hotspots/calculations";
+export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, compare, onPick, view, grid, boundary, focus, drawing, onRectangle, candidateMode }: { raster: Raster | null; opacity: number; low: number; high: number; a: Point; b: Point; compare: boolean; onPick: (lat: number, lon: number) => void; view: string; grid: boolean; boundary?: Bounds; focus?: { lat: number; lon: number }; drawing?: boolean; onRectangle?: (b: Bounds) => void; candidateMode?: "warming" | "drying" | "combined" }) {
  const host = useRef<HTMLDivElement>(null), map = useRef<L.Map | null>(null), layer = useRef<L.GridLayer | null>(null), markers = useRef<L.LayerGroup | null>(null);
  const pick = useRef(onPick); pick.current = onPick;
  useEffect(() => {
@@ -19,7 +20,7 @@ export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, com
   const currentMap = m, currentRaster = raster;
   layer.current?.remove();
   const styles = getComputedStyle(document.documentElement), trend = raster.slice.mode === "trend";
-  const stops = Array.from({ length: 5 }, (_, i) => styles.getPropertyValue(`--spatial-${trend ? "trend" : "value"}-${i}`).trim());
+  const stops = Array.from({ length: 5 }, (_, i) => styles.getPropertyValue(candidateMode ? `--hotspot-${candidateMode}` : `--spatial-${trend ? "trend" : "value"}-${i}`).trim());
   const palette = document.createElement("canvas"); palette.width = 256; palette.height = 1;
   const ctx = palette.getContext("2d"); if (!ctx) return;
   const gradient = ctx.createLinearGradient(0, 0, 255, 0); stops.forEach((color, i) => gradient.addColorStop(i / 4, color));
@@ -35,17 +36,17 @@ export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, com
      const cell = cellAt(currentRaster, lat, lon); if (!cell || cell.value === null) continue;
      const c = Math.round(Math.max(0, Math.min(1, (cell.value - low) / (high - low))) * 255) * 4, i = (y * 256 + x) * 4;
      image.data[i] = colors[c] ?? 0; image.data[i + 1] = colors[c + 1] ?? 0; image.data[i + 2] = colors[c + 2] ?? 0; image.data[i + 3] = 255;
-     if (grid && coords.z >= 5) {
+     if (grid && (candidateMode || coords.z >= 5)) {
       const next = cellAt(currentRaster, lat, lon + 360 / (256 * 2 ** coords.z));
       const below = currentMap.unproject(L.point(coords.x * 256 + x, coords.y * 256 + y + 1.5), coords.z).lat;
-      if (next?.index !== cell.index || cellAt(currentRaster, below, lon)?.index !== cell.index) image.data[i + 3] = 110;
+      if (candidateMode ? next?.value !== cell.value || cellAt(currentRaster, below, lon)?.value !== cell.value : next?.index !== cell.index || cellAt(currentRaster, below, lon)?.index !== cell.index) image.data[i + 3] = 110;
      }
     }
    }
    context.putImageData(image, 0, 0); return tile;
   } }
   layer.current = new Tiles({ opacity: opacity / 100, updateWhenIdle: true, keepBuffer: 1 }).addTo(m);
- }, [raster, low, high, grid]);
+ }, [raster, low, high, grid, candidateMode]);
  useEffect(() => { layer.current?.setOpacity(opacity / 100); }, [opacity]);
  useEffect(() => {
   const m = map.current; if (!m) return;
@@ -56,5 +57,22 @@ export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, com
   }
  }, [a, b, compare]);
  useEffect(() => { if (view.startsWith("malaysia")) map.current?.setView([4, 109], 5); else if (view.startsWith("asia")) map.current?.setView([8, 110], 4); else map.current?.setView([12, 0], 2); }, [view]);
+ useEffect(() => {
+  const m = map.current; if (!m || !boundary) return;
+  const color = getComputedStyle(document.documentElement).getPropertyValue("--map-a").trim();
+  const east = boundary.east < boundary.west ? boundary.east + 360 : boundary.east;
+  const rectangle = L.rectangle([[boundary.south, boundary.west], [boundary.north, east]], { color, weight: 2, fill: false, dashArray: "6 4", interactive: false }).addTo(m);
+  return () => { rectangle.remove(); };
+ }, [boundary]);
+ useEffect(() => { if (focus) map.current?.setView([focus.lat, focus.lon], 5); }, [focus]);
+ useEffect(() => {
+  const m = map.current; if (!m || !drawing) return;
+  m.dragging.disable(); let start: L.LatLng | undefined, preview: L.Rectangle | undefined;
+  const down = (e: L.LeafletMouseEvent) => { start = e.latlng; };
+  const move = (e: L.LeafletMouseEvent) => { if (!start) return; preview?.remove(); preview = L.rectangle([start, e.latlng], { interactive: false }).addTo(m); };
+  const up = (e: L.LeafletMouseEvent) => { if (!start) return; const west = Math.min(start.lng, e.latlng.lng), east = Math.max(start.lng, e.latlng.lng); const normalize = (lon: number) => ((lon + 180) % 360 + 360) % 360 - 180; onRectangle?.({ west: normalize(west), east: normalize(east), south: Math.min(start.lat, e.latlng.lat), north: Math.max(start.lat, e.latlng.lat) }); start = undefined; preview?.remove(); };
+  m.on("mousedown", down); m.on("mousemove", move); m.on("mouseup", up);
+  return () => { m.dragging.enable(); m.off("mousedown", down); m.off("mousemove", move); m.off("mouseup", up); preview?.remove(); };
+ }, [drawing, onRectangle]);
  return <div ref={host} className="spatial-map h-[420px] w-full sm:h-[520px]" aria-label="NASA global environmental raster map" />;
 }
