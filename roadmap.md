@@ -2,7 +2,9 @@
 ## Monthly CCDF and ITU attenuation
 - [x] Add strict empirical monthly CCDF, paired samples, seasonal filtering and exports.
 - [x] Acquire and inspect official P.837-8/P.839-4 grids; verify pure pinned-model helpers against official satellite references and independent terrestrial equations.
-- [ ] Complete bundled engineering grids, filled maps, geometry investigations, point curves and spatial exports (blocked: official ITU redistribution permission not established; originals remain temporary, no substitutes shipped).
+- [ ] Replace the blocker with browser-local verified-file parsing, session-only data and optional on-device remember/remove.
+- [ ] Complete local-only filled contours, GEO/reference scenarios, point curves, masks and calculated-result exports; never distribute source grids.
+- [ ] Verify actual official files through browser inputs, source nodes, map/curve, cache lifecycle, no-upload behavior and scientific regressions; preview only.
 - [x] Add independent scenario validation, submitted request export and explicit unavailable-input status.
 - [x] 194 tests pass; real IMERG CCDF N=240, January N=20, CSV zero-tail, stale state, satellite/terrestrial p validation and phone layout verified; no browser errors, build OK; unpublished.
 ## Prepared January 2024 chlorophyll installation

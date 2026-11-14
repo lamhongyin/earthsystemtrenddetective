@@ -60,4 +60,4 @@ use the editor.
 - Rainfall source investigations use separate canonical calendar-month depth records in `src/lib/rainfall`, strict reviewed CSV imports and native-support matching; never feed depths to rate annualisation or substitute POWER for IMERG.
 - IMERG cloud catalogue discovery is not data retrieval; expose imports honestly until authenticated NASA numeric access is verified, and retain immutable source hashes, intervals and support for reproducible monthly research without a Python runtime.
 - Monthly CCDF uses strict survival of submitted depths and common paired months, never annual one-minute statistics.
-- Pure pinned ITU rain models stay separate from monthly NASA data; outputs require verified official assets and redistribution permission, never substitute grids.
+- Pure ITU models use verified visitor files locally without uploads; public grid bundling needs permission. Workers parse/calculate and IndexedDB persistence is opt-in; this is not a copyright grant.
