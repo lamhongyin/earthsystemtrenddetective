@@ -15,7 +15,7 @@ const Map = lazy(() => import("./SpatialCanvasMap"));
 const AREAS: Record<string, Bounds> = { world: { west: -180, east: 180, south: -90, north: 90 }, asia: { west: 92, east: 142, south: -12, north: 29 }, malaysia: { west: 99, east: 120, south: 0, north: 8 } };
 const resultCache = new globalThis.Map<string, Result>();
 export function HotspotPanel({ a, b, compare, onUse, onCompare }: { a: Point; b: Point; compare: boolean; onUse: (id: "A" | "B", p: Point) => void; onCompare: (p: Point) => void }) {
-  const [settings, setSettings] = useState<Settings>({ mode: "warming", bounds: AREAS.world ?? { west: -180, east: 180, south: -90, north: 90 }, start: 2005, end: 2024, threshold: 10, mask: "all-valid" });
+  const [settings, setSettings] = useState<Settings>({ mode: "warming", bounds: AREAS["world"] ?? { west: -180, east: 180, south: -90, north: 90 }, start: 2005, end: 2024, threshold: 10, mask: "all-valid" });
   const [area, setArea] = useState("world"), [result, setResult] = useState<Result | null>(null), [evidence, setEvidence] = useState<{ data: AnnualData; manifest: Manifest } | null>(null), [selected, setSelected] = useState<number | null>(null);
   const [busy, setBusy] = useState(false), [status, setStatus] = useState(""), [error, setError] = useState<string | null>(null), [opacity, setOpacity] = useState(80), [boundaries, setBoundaries] = useState(true), [ranking, setRanking] = useState("area"), [drawing, setDrawing] = useState(false), [view, setView] = useState("world"), [focus, setFocus] = useState<{ lat: number; lon: number }>();
   const worker = useRef<Worker | null>(null), controller = useRef<AbortController | null>(null), runId = useRef(0), draftKey = useRef(""); draftKey.current = JSON.stringify(settings);

@@ -69,7 +69,7 @@ export default function SpatialCanvasMap({ raster, opacity, low, high, a, b, com
   const m = map.current; if (!m || !drawing) return;
   m.dragging.disable(); let start: L.LatLng | undefined, preview: L.Rectangle | undefined;
   const down = (e: L.LeafletMouseEvent) => { start = e.latlng; };
-  const move = (e: L.LeafletMouseEvent) => { if (!start) return; preview?.remove(); preview = L.rectangle([start, e.latlng], { interactive: false }).addTo(m); };
+  const move = (e: L.LeafletMouseEvent) => { if (!start) return; preview?.remove(); preview = L.rectangle(L.latLngBounds(start, e.latlng), { interactive: false }).addTo(m); };
   const up = (e: L.LeafletMouseEvent) => { if (!start) return; const west = Math.min(start.lng, e.latlng.lng), east = Math.max(start.lng, e.latlng.lng); const normalize = (lon: number) => ((lon + 180) % 360 + 360) % 360 - 180; onRectangle?.({ west: normalize(west), east: normalize(east), south: Math.min(start.lat, e.latlng.lat), north: Math.max(start.lat, e.latlng.lat) }); start = undefined; preview?.remove(); };
   m.on("mousedown", down); m.on("mousemove", move); m.on("mouseup", up);
   return () => { m.dragging.enable(); m.off("mousedown", down); m.off("mousemove", move); m.off("mouseup", up); preview?.remove(); };
