@@ -1,9 +1,10 @@
 # Worldwide explorer
 ## Environmental Hotspot Explorer
-- [ ] Prepare verified annual numeric temperature/rainfall arrays and provenance.
-- [ ] Implement completeness, OLS, area-weighted thresholds and four-edge connected areas with scientific tests.
-- [ ] Add worldwide/regional/drawn-area Hotspots map, ranked evidence, shared A/B and exports.
-- [ ] Verify real NASA calculations, complete world coverage and desktop/mobile preview; do not publish.
+- [x] Prepare verified annual numeric temperature/rainfall arrays and provenance.
+- [x] Implement completeness, OLS, area-weighted thresholds and four-edge connected areas with scientific tests.
+- [x] Add worldwide/regional/drawn-area Hotspots map, ranked evidence, shared A/B and exports.
+- [x] Verify real NASA calculations, complete world coverage and desktop/mobile preview; do not publish.
+- Limits: prepared years 2005–2024; selectable periods require 15 years. All valid cells including oceans, no land-only or political boundary mask. NASA annual aggregation completeness is inherited. Optional hazard indices and significant clusters are not included.
 ## Global Spatial Map
 - [x] Stage 1: verify NASA temperature slices, worldwide rendering, same-slice samples, history and A/B integration.
 - [x] Stage 2: prepare and independently verify a native-resolution temperature Sen slope product.

@@ -1,12 +1,12 @@
 import { CALCULATION_VERSION, cellAreaKm2, cellBounds, cellCentre, type Result } from "./calculations";
 import type { Manifest } from "./load";
-export function hotspotCsv(result: Result) {
-  const header = "cell_id,area_id,latitude,longitude,west,east,south,north,grid_dx_degrees,grid_dy_degrees,area_km2,start_year,end_year,temperature_valid_years,rainfall_valid_years,temperature_ols_C_per_decade,rainfall_ols_mm_per_decade,mean_annual_temperature_C,mean_annual_rainfall_mm,candidate_type,threshold_percent,warming_cutoff_C_per_decade,drying_cutoff_mm_per_decade,mask,study_west,study_east,study_south,study_north,calculation_version";
+export function hotspotCsv(result: Result, manifest?: Manifest) {
+  const header = "cell_id,area_id,latitude,longitude,west,east,south,north,grid_dx_degrees,grid_dy_degrees,area_km2,start_year,end_year,temperature_valid_years,rainfall_valid_years,temperature_ols_C_per_decade,rainfall_ols_mm_per_decade,mean_annual_temperature_C,mean_annual_rainfall_mm,candidate_type,threshold_percent,warming_cutoff_C_per_decade,drying_cutoff_mm_per_decade,mask,study_west,study_east,study_south,study_north,calculation_version,source_version,prepared_at,temperature_variable,rainfall_variable,source_time_convention";
   const lines = [header], s = result.settings;
   for (let i = 0; i < result.membership.length; i++) {
     if (!Number.isFinite(result.temperature[i])) continue;
     const c = cellCentre(result.grid, i), b = cellBounds(result.grid, i), area = result.membership[i] ?? 0;
-    lines.push([i, area, c.lat, c.lon, b.west, b.east, b.south, b.north, result.grid.dx, result.grid.dy, cellAreaKm2(b), s.start, s.end, result.temperatureCount[i], result.rainfallCount[i], result.temperature[i], result.rainfall[i], result.temperatureMean[i], result.rainfallMean[i], area ? s.mode : "not-selected", s.threshold, result.warmingCutoff ?? "", result.dryingCutoff ?? "", s.mask, s.bounds.west, s.bounds.east, s.bounds.south, s.bounds.north, CALCULATION_VERSION].join(","));
+    lines.push([i, area, c.lat, c.lon, b.west, b.east, b.south, b.north, result.grid.dx, result.grid.dy, cellAreaKm2(b), s.start, s.end, result.temperatureCount[i], result.rainfallCount[i], result.temperature[i], result.rainfall[i], result.temperatureMean[i], result.rainfallMean[i], area ? s.mode : "not-selected", s.threshold, result.warmingCutoff ?? "", result.dryingCutoff ?? "", s.mask, s.bounds.west, s.bounds.east, s.bounds.south, s.bounds.north, CALCULATION_VERSION, manifest?.version ?? "", manifest?.preparedAt ?? "", "T2M", "PRECTOTCORR_SUM", "LST"].join(","));
   }
   return lines.join("\n");
 }
