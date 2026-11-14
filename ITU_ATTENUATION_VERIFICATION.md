@@ -1,3 +1,15 @@
+# Current update: hosted ITU originals and short-interval rainfall research (2026-11-14)
+- Owner states redistribution permission exists and authorizes hosting. Documentation has not been independently reviewed; the UI makes that distinction. Earlier local-only statements below describe the preceding implementation, not the current serving mode.
+- Uploaded originals matched the pinned SHA-256 hashes exactly (R001 28,182,430 bytes; h0 171,662 bytes). Lovable Assets pointers serve these files; no raw climatology grids are committed. One-click downloads still pass the original worker's hash, shape, finite-value and seam checks. Calculated exports still exclude sampled source fields. Local file input and cache failure handling remain available.
+- Fresh Chromium one-click flow returned 289/289 valid nodes and 544 filled contour pieces. Point (2N,103E) displayed Ap=A0.01=53.0846 dB and a nonempty curve. Existing genuine monthly IMERG demonstration and monthly CCDF still load.
+- Added local, worker-parsed interval-start UTC mm/h CSV imports and strict observed-time CCDF. Complete 30-minute/gauge windows only; earliest 70% trains empirical quantile transfer, later windows test it. Estimates describe a distribution, not reconstructed minutes, validated extremes, annual availability or ITU inputs. This is an exploratory method, not an accepted ITU integration-time conversion.
+- All 212 tests passed, including pinned ITU parity, cache/export checks and five new rainfall scientific checks. Latest automatic compilation reported build OK.
+- Browser rainfall investigation used explicitly synthetic temporary CSVs only: 30 half-hour windows, 900 minutes, 21 training / 9 held-out windows. UI imports, curves and validation table worked with no page errors. Actual half-hourly IMERG and one-minute gauge files have NOT been supplied, despite the owner's intention to provide both; real-data conversion validation remains blocked.
+- No publication/deployment, paid service or new Python runtime. Source-grid asset installation is the explicitly requested exception to previous no-hosting requirements. Rainfall files stay session-local.
+- Final rerun after shortening point tooltip percentages: 390px page has no horizontal overflow; no page errors. Latest automatic build OK. Final focused regression: 94 tests passed. Actual rainfall validation still awaits both rainfall files; screenshots of synthetic controls are not evidence of real-data conversion accuracy.
+
+## Previous implementation evidence (historical)
+
 # Monthly CCDF and browser-local ITU engineering verification
 
 ## Implemented

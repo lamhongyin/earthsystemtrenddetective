@@ -1,4 +1,9 @@
 # Worldwide explorer
+## One-click ITU loading and short-interval rainfall research
+- [x] Install hash-verified owner-supplied ITU assets based on owner's stated redistribution permission; enable one-click loading while retaining local files and safe exports.
+- [x] Add local 30-minute / one-minute imports, strict distributions and chronological held-out quantile-transfer investigation; do not treat estimates as measurements or feed them to attenuation models.
+- [x] Verify automatic map/point flow (289 nodes / 544 pieces), 212 scientific tests and phone preview without overflow; latest automatic build OK, no publication.
+- [ ] Validate with real half-hourly IMERG and matching local one-minute observations (blocked: these two rainfall datasets have not been uploaded).
 ## January 2024 SST and artificial Fisheries demonstration
 - [x] Decode owner SST NetCDF with CF packing, native quality 0/1 and fixed ocean mask; install checksum-verified assets without altering chlorophyll.
 - [x] Add paired real environmental maps, separate artificial fish symbols and persistent disclosure.
