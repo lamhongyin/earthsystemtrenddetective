@@ -1,0 +1,23 @@
+import { describe, expect, it } from "vitest";
+import { importGiovanni, inspectCsv, MAX_CSV_BYTES, type ImportReview } from "./import";
+import { monthKey } from "./data";
+const review: ImportReview = { dateColumn: "time", valueColumn: "GPM_3IMERGM_07_precipitation", unit: "mm/hour", sourceId: "IMERG", datasetId: "GPM_3IMERGM_07", version: "07B", variable: "GPM_3IMERGM_07_precipitation", intervalConfirmed: true, timeConvention: "UTC", citation: "Synthetic test only; no real reference investigation", sourceLink: "https://giovanni.gsfc.nasa.gov/", fillValues: "-8888", support: { mode: "region", bounds: { west: 102, south: 1, east: 104, north: 3 }, mask: "all-cell", resolution: "0.1°", aggregation: "area weighted; intersecting cell area", spatialCoverage: "reported in original file" } };
+const csv = (values: string) => inspectCsv(`\uFEFFTitle,"Monthly precipitation, Final"\r\nUnits,mm/hr\r\n,\r\ntime,GPM_3IMERGM_07_precipitation,precipitationQualityIndex\r\n${values}`);
+describe("strict Giovanni monthly import", () => {
+  it("reads quoted metadata, BOM and CRLF", async () => { const c = csv('"2024-01-01T00:00:00Z",0.5,1\r\n2024-02-01,NaN,1\r\n'); const s = await importGiovanni(c, review); expect(c.metadata['Title']).toBe("Monthly precipitation, Final"); expect(s.rows[0]?.valueMm).toBe(372); expect(s.rows[1]?.valueMm).toBeNull(); expect(s.sha256).toHaveLength(64); expect(s.accessRoute).toContain("import"); });
+  it("accepts explicit monthly keys", () => expect(monthKey("202402")).toBe("2024-02"));
+  it("rejects impossible calendars", () => expect(() => monthKey("2024-13-01")).toThrow());
+  it("rejects ambiguous partial-month dates", () => expect(() => monthKey("2024-02-29")).toThrow());
+  it("rejects quality-index selection", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, valueColumn: "precipitationQualityIndex" })).rejects.toThrow(/quality/));
+  it("rejects unknown units", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, unit: "unknown" as ImportReview["unit"] })).rejects.toThrow(/units/));
+  it("rejects wrong run/version", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, version: "06" })).rejects.toThrow(/v07/));
+  it("does not confuse random-error variable with merged rainfall", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, variable: "GPM_3IMERGM_07_randomError" })).rejects.toThrow(/uncertainty/));
+  it("rejects duplicate months even if equal", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1\n202401,0.5,1"), review)).rejects.toThrow(/Duplicate/));
+  it("retains custom fill values as gaps", async () => expect((await importGiovanni(csv("2024-01-01,0.5,1\n2024-02-01,-8888,1"), review)).rows[1]?.valueMm).toBeNull());
+  it("requires confirmation of actual represented interval", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, intervalConfirmed: false })).rejects.toThrow(/calendar month/));
+  it("rejects oversized uploads", () => expect(() => inspectCsv("a".repeat(MAX_CSV_BYTES + 1))).toThrow(/2 MB/));
+  it("rejects malformed quoted CSV", () => expect(() => inspectCsv('time,rain\n2024-01-01,"2')).toThrow(/Malformed/));
+  it("rejects nonnumeric rainfall without treating it as zero", async () => await expect(importGiovanni(csv("2024-01-01,unknown,1"), review)).rejects.toThrow(/number/));
+  it("rejects secret-bearing session links", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, sourceLink: "https://giovanni.gsfc.nasa.gov/?token=private" })).rejects.toThrow(/credentials/));
+  it("does not accept a large region as a native point cell", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, support: { ...review.support, mode: "point" } })).rejects.toThrow(/0.1/));
+});
