@@ -32,3 +32,7 @@ use the editor.
 ## Earth Trend Detective
 - Scientific logic lives in `src/lib/trend/` (pure TS ports of the SciPy starter), validated by `trend.test.ts` against a SciPy-generated fixture; keep parity tests passing when touching stats.
 - NASA POWER is fetched via a same-origin server function proxying only the fixed monthly endpoint, because browser CORS/deploy behavior is not guaranteed.
+- Common-year alignment and deterministic interpretation live in the trend domain module; all comparison statistics are recomputed after alignment to keep periods identical.
+- Google Maps renders through an asynchronous browser callback; place search is an explicit authenticated server function with bounded results and no persistent geocoder cache to protect billable access.
+- NASA analysis stays public and uses submitted snapshots, per-location outcomes, and keyed query deduplication; search authentication must not gate analysis.
+- Google-derived place labels are transient display content and are replaced by selected-point labels in exports to avoid distributing provider text.

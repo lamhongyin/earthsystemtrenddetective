@@ -27,3 +27,15 @@ npm run dev
 - TypeScript
 - React
 - Tailwind CSS
+
+## Worldwide explorer
+
+NASA analysis is public; Google place search requires a Cloud Auth session (email/password, Google, or Lovable). No profile table or NASA database is used. Connect Google Maps in Lovable to provision browser and server credentials. Keep server credentials secret. The managed browser key supports authorized Lovable domains; custom domains require an appropriately restricted user-owned key. Maps/Places usage is metered; the gateway has workspace quotas but browser map usage is separate.
+
+The map loads Maps JavaScript asynchronously using a callback and tracking channel, without Places browser libraries or a map ID. Google copyright/logo remain visible. Search submits explicitly to Places API (New), with up to eight suggestions; selecting a country chooses a representative point, never an average. No reverse lookup is needed for clicked/manual points. Search content is held in memory only; Google-derived text is replaced with selected-point labels in exports. End users can review Google terms and privacy links beside search. Google Maps is not supported in Google prohibited territories. Review current Google service terms for your billing jurisdiction before distribution, including EEA-specific Places restrictions. No geolocation tracking or AI use of Maps content is implemented.
+
+NASA requests use the fixed monthly point endpoint. Query keys include parameter, exact coordinates and years; comparison runs at most two requests concurrently and identical points deduplicate. Successful payloads carry UTC retrieval timestamps and are reused for 24 hours in the browser and best-effort worker memory (not guaranteed across worker restarts). Retry-After is displayed and respected before a location-specific manual retry; there are no automatic upstream retry loops. Upstream timeout is 90 seconds, subject to hosting execution limits. Returned geometry is shown separately and is not treated as authoritative grid-cell identity.
+
+Comparison uses the intersection of complete years, requires eight common years, recomputes all statistics, preserves gaps, and never fills missing observations. Individual exports retain all valid months/all complete years; comparison exports contain common years only. CSV values retain full precision, place text is formula-safe, and unavailable JSON numbers are null. Original SciPy fixtures use a 1e-9 relative tolerance; tests also cover common-year alignment, interpretation, coordinates, and exports.
+
+Google Maps rendering and live Places requests cannot be tested from the agent sandbox. Validate map clicks, search, attribution and A/B marker behavior on an authorized deployed origin. Coordinate/preset NASA flows can be verified locally without calling Google.

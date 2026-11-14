@@ -62,6 +62,7 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-comparison-b: var(--comparison-b);
   --color-notice: var(--notice);
   --color-notice-foreground: var(--notice-foreground);
   --color-success: var(--success);
@@ -80,6 +81,13 @@
 }
 
 :root {
+  --comparison-b: oklch(0.62 0.17 50);
+  --map-a: #2166ac;
+  --map-b: #c65d13;
+  --map-marker-text: #ffffff;
+  --google-auth-background: #ffffff;
+  --google-auth-border: #747775;
+  --google-auth-text: #1f1f1f;
   --radius: 0.75rem;
   --background: oklch(0.975 0.006 230);
   --foreground: oklch(0.26 0.06 258);
@@ -120,6 +128,10 @@
 }
 
 .dark {
+  --comparison-b: oklch(0.77 0.17 55);
+  --google-auth-background: #131314;
+  --google-auth-border: #8e918f;
+  --google-auth-text: #e3e3e3;
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);
@@ -167,5 +179,8 @@
 
 @layer base {
   body { font-family: var(--font-sans); }
-  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: 0; }
 }
+
+.google-auth { background: var(--google-auth-background); border-color: var(--google-auth-border); color: var(--google-auth-text); gap: 10px; padding-inline: 12px; }
+.google-auth svg { width: 18px; height: 18px; }
