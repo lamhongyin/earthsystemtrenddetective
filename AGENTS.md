@@ -39,3 +39,5 @@ use the editor.
 - Forecast training lives in a separately hosted pinned Python service under `services/forecast`; TanStack server functions proxy its fixed configured URL with a server-only credential because the app runtime cannot execute Python.
 - Forecasting uses direct lead-specific trees and a seasonal benchmark, expanding origins and disjoint validation/calibration/test target blocks; keep scientific acceptance tests passing and never substitute trend extrapolation when the service is unavailable.
 - Forecast results, charts and exports use immutable submitted monthly snapshots; process independent fits sequentially and ignore or cancel stale jobs to bound work and prevent mislabeled results.
+- Solar normalization lives in `src/lib/trend/solar.ts`; accept verified energy units, reject ambiguous flux units, preserve zeros and flag negatives so historical comparisons and forecasts share one canonical monthly target.
+- NASA cache identities include community, monthly resolution and canonical-unit version; solar uses RE while weather retains AG to prevent incompatible source/unit reuse.

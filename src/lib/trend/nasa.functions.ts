@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { PARAMETER_CODES, POWER_ENDPOINT, MIN_YEAR, MAX_YEAR } from "./config";
+import { PARAMETER_CODES, POWER_ENDPOINT, MIN_YEAR, MAX_YEAR, minYearFor, communityFor, CANONICAL_UNIT_VERSION } from "./config";
 
 const Input = z.object({
   parameter: z.enum(PARAMETER_CODES as [string, ...string[]]),
@@ -8,7 +8,7 @@ const Input = z.object({
   longitude: z.number().finite().min(-180).max(180),
   start: z.number().int().min(MIN_YEAR).max(MAX_YEAR),
   end: z.number().int().min(MIN_YEAR).max(MAX_YEAR),
-});
+}).refine(d => d.start >= minYearFor(d.parameter) && d.end >= d.start, "Requested period is outside this parameter's coverage or is reversed.");
 
 export type PowerResult = { ok: true; payload: string; retrievedAt: string } | { ok: false; error: string; retryAfter?: number };
 const TTL = 24 * 60 * 60 * 1000;
@@ -18,12 +18,13 @@ const cache = new Map<string, { at: number; payload: string }>();
 export const fetchPowerMonthly = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }): Promise<PowerResult> => {
-    const key = `${data.parameter}|${data.latitude}|${data.longitude}|${data.start}|${data.end}`;
+    const community = communityFor(data.parameter);
+    const key = `${data.parameter}|${data.latitude}|${data.longitude}|${data.start}|${data.end}|${community}|monthly|${CANONICAL_UNIT_VERSION}`;
     const hit = cache.get(key);
     if (hit && Date.now() - hit.at < TTL) return { ok: true, payload: hit.payload, retrievedAt: new Date(hit.at).toISOString() };
     const url = new URL(POWER_ENDPOINT);
     url.search = new URLSearchParams({
-      parameters: data.parameter, community: "AG",
+      parameters: data.parameter, community,
       longitude: String(data.longitude), latitude: String(data.latitude),
       start: String(data.start), end: String(data.end), format: "JSON",
     }).toString();
