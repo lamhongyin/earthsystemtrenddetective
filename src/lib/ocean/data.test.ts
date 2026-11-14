@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { decodeOcean, dailyToMonthly, axisIndices, normalizeLongitude, commonMonth, oceanMean, cellWeight, seasonalTrend, monthRange, validateOceanTarget, OceanRequestGate } from "./data";
 describe("Ocean scientific rules", () => {
-  it("converts Kelvin once and retains NOAA Celsius", () => { expect(decodeOcean(300, "K", -999)).toBeCloseTo(26.85); expect(decodeOcean(26.85, "degree_C", -999)).toBe(26.85); });
+  it("converts Kelvin once and retains NASA Celsius", () => { expect(decodeOcean(300, "K", -999)).toBeCloseTo(26.85); expect(decodeOcean(26.85, "degree_C", -999)).toBe(26.85); });
   it("masks fill, NaN and invalid chlorophyll without erasing valid zero SST", () => { expect(decodeOcean(-999, "degree_C", -999)).toBeNull(); expect(decodeOcean(NaN, "mg m-3", NaN)).toBeNull(); expect(decodeOcean(0, "mg m-3", NaN, 0.001, 100)).toBeNull(); expect(decodeOcean(0, "degree_C", -999)).toBe(0); });
   it("handles opposite latitude orientation", () => { expect(axisIndices(-90, 90, 1, 10, 12)).toEqual({ start: 100, end: 102 }); expect(axisIndices(90, -90, 1, 10, 12)).toEqual({ start: 78, end: 80 }); });
   it("normalizes the date line and rejects oversized or wrapped regions", () => { expect(normalizeLongitude(181)).toBe(-179); expect(() => validateOceanTarget({ lat: 0, lon: 0, bounds: { south: 0, north: 1, west: 0, east: 1 } })).toThrow(); expect(() => validateOceanTarget({ lat: 0, lon: 180, bounds: { south: 0, north: 0.1, west: 179.95, east: -179.95 } })).toThrow(); });
