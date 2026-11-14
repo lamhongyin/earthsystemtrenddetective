@@ -18,6 +18,6 @@ describe("strict Giovanni monthly import", () => {
   it("rejects oversized uploads", () => expect(() => inspectCsv("a".repeat(MAX_CSV_BYTES + 1))).toThrow(/2 MB/));
   it("rejects malformed quoted CSV", () => expect(() => inspectCsv('time,rain\n2024-01-01,"2')).toThrow(/Malformed/));
   it("rejects nonnumeric rainfall without treating it as zero", async () => await expect(importGiovanni(csv("2024-01-01,unknown,1"), review)).rejects.toThrow(/number/));
-  it("rejects secret-bearing session links", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, sourceLink: "https://giovanni.gsfc.nasa.gov/?token=private" })).rejects.toThrow(/credentials/));
+  it("rejects secret-bearing session links", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, sourceLink: "https://giovanni.gsfc.nasa.gov/?token=private" })).rejects.toThrow(/credential/));
   it("does not accept a large region as a native point cell", async () => await expect(importGiovanni(csv("2024-01-01,0.5,1"), { ...review, support: { ...review.support, mode: "point" } })).rejects.toThrow(/0.1/));
 });

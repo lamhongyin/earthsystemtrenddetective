@@ -6,7 +6,7 @@ export default function RainfallSupportMap({ supports }: { supports: { label: st
   useEffect(() => {
     if (!host.current || !supports.length) return;
     const map = L.map(host.current, { scrollWheelZoom: false });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap © CARTO" }).addTo(map);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap" }).addTo(map);
     const styles = getComputedStyle(document.documentElement), extent = L.latLngBounds([]);
     supports.forEach(({ label, support }, i) => {
       const b = support.bounds, bounds = L.latLngBounds([b.south, b.west], [b.north, b.east]);
