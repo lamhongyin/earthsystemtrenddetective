@@ -51,7 +51,7 @@ export async function preparedImage(code: OceanCode, date: string) {
   const ctx = canvas.getContext("2d"); if (!ctx) throw new Error("The scientific map could not be drawn.");
   const pixels = ctx.createImageData(r.width, r.height);
   // Same five stops as the existing ocean-legend token, interpolated in RGB.
-  const colors = getComputedStyle(document.documentElement).getPropertyValue("--ocean-raster-colors").trim().split(";").map(c => c.split(",").map(Number));
+  const colors = getComputedStyle(document.documentElement).getPropertyValue("--ocean-raster-colors").trim().split("/").map(c => c.split(",").map(Number));
   const sdef = OCEAN_SOURCES[code];
   r.values.forEach((v, i) => { if (v === null) return; const f = Math.max(0, Math.min(1, code === "sst" ? (v - sdef.low) / (sdef.high - sdef.low) : (Math.log10(v) - Math.log10(sdef.low)) / (Math.log10(sdef.high) - Math.log10(sdef.low)))); const scaled = f * 4, idx = Math.min(3, Math.floor(scaled)), t = scaled - idx; for (let c = 0; c < 3; c++) pixels.data[i * 4 + c] = Math.round((colors[idx]?.[c] ?? 0) * (1 - t) + (colors[idx + 1]?.[c] ?? 0) * t); pixels.data[i * 4 + 3] = 255; });
   ctx.putImageData(pixels, 0, 0);
