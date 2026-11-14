@@ -12,7 +12,7 @@ import type { Point } from "@/lib/trend/comparison";
 import { parsePowerMonthly } from "@/lib/trend/parse";
 import { fetchPowerMonthly } from "@/lib/trend/nasa.functions";
 import { forecastService } from "@/lib/forecast/service.functions";
-import type { ForecastRequest, ForecastResult, ForecastModel } from "@/lib/forecast/types";
+import type { ForecastRequest, ForecastResult, ForecastModel, ForecastJob } from "@/lib/forecast/types";
 type PanelResult = { key: string; label: string; exportLabel: string; result?: ForecastResult; error?: string };
 export function ForecastPanel({ a, b, compare, code }: { a: Point; b: Point; compare: boolean; code: string }) {
   const [target, setTarget] = useState("A"), [variable, setVariable] = useState(code);
@@ -21,7 +21,11 @@ export function ForecastPanel({ a, b, compare, code }: { a: Point; b: Point; com
   const [loading, setLoading] = useState(false), [progress, setProgress] = useState(""), [error, setError] = useState("");
   const [results, setResults] = useState<PanelResult[]>([]), [submitted, setSubmitted] = useState("");
   const runId = useRef(0), jobId = useRef<string | null>(null), mounted = useRef(true);
-  const power = useServerFn(fetchPowerMonthly), service = useServerFn(forecastService), qc = useQueryClient();
+  const power = useServerFn(fetchPowerMonthly), serviceFn = useServerFn(forecastService), qc = useQueryClient();
+  async function service(input: Parameters<typeof serviceFn>[0]): Promise<{ ok: true; job: ForecastJob } | { ok: false; error: string }> {
+    const response = await serviceFn(input);
+    return response.ok ? { ok: true, job: JSON.parse(response.jobJson) as ForecastJob } : response;
+  }
   const key = JSON.stringify({ a, b: compare ? b : null, target, variable, start, end, horizon, level, model });
   const draftKey = useRef(key); draftKey.current = key;
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; runId.current++; }; }, []);
@@ -91,7 +95,7 @@ export function ForecastPanel({ a, b, compare, code }: { a: Point; b: Point; com
         if (live()) setResults([...next]);
       }
       if (live()) setProgress("Forecast evaluation complete.");
-    } catch (e) { if (live()) setError(e instanceof Error ? e.message : "Forecast failed."); }
+    } catch (e) { if (live()) { setError(e instanceof Error ? e.message : "Forecast failed."); setProgress(""); } }
     finally { if (mounted.current && id === runId.current) setLoading(false); }
   }
   const select = (label: string, value: string, change: (v: string) => void, options: [string, string][]) => <div className="space-y-1.5"><Label>{label}</Label><Select value={value} onValueChange={change} disabled={loading}><SelectTrigger aria-label={label}><SelectValue /></SelectTrigger><SelectContent>{options.map(([v, text]) => <SelectItem key={v} value={v}>{text}</SelectItem>)}</SelectContent></Select></div>;

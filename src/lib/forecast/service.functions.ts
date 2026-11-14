@@ -9,12 +9,12 @@ const settings = z.object({
   provenance: z.record(z.unknown()),
 }).refine(d => d.start <= d.end && Number(d.start.slice(0, 4)) >= 1981 && Number(d.end.slice(0, 4)) <= 2025, "Training years must be ordered between 1981 and 2025.");
 const command = z.discriminatedUnion("action", [z.object({ action: z.literal("check") }), z.object({ action: z.literal("submit"), request: settings }), z.object({ action: z.literal("poll"), id: z.string().regex(/^[A-Za-z0-9_-]{20,64}$/) }), z.object({ action: z.literal("cancel"), id: z.string().regex(/^[A-Za-z0-9_-]{20,64}$/) })]);
-export const forecastService = createServerFn({ method: "POST" }).inputValidator((input: unknown) => command.parse(input)).handler(async ({ data }): Promise<{ ok: true; job: ForecastJob } | { ok: false; error: string }> => {
+export const forecastService = createServerFn({ method: "POST" }).inputValidator((input: unknown) => command.parse(input)).handler(async ({ data }): Promise<{ ok: true; jobJson: string } | { ok: false; error: string }> => {
   const base = process.env['FORECAST_SERVICE_URL'], token = process.env['FORECAST_SERVICE_TOKEN'];
   if (!base || !token) return { ok: false, error: "Forecast training service is not connected. A separately hosted Python service and its service credential are required; historical analysis remains available." };
-  if (data.action === "check") return { ok: true, job: { id: "", status: "queued" } };
   let url: URL;
   try { url = new URL(base); if (url.protocol !== "https:") throw new Error(); } catch { return { ok: false, error: "Forecast service requires a valid HTTPS hosting address." }; }
+  if (data.action === "check") return { ok: true, jobJson: JSON.stringify({ id: "", status: "queued" }) };
   url.pathname = `${url.pathname.replace(/\/$/, "")}/jobs${data.action === "submit" ? "" : `/${data.id}`}`;
   url.search = ""; url.hash = "";
   try {
@@ -24,6 +24,7 @@ export const forecastService = createServerFn({ method: "POST" }).inputValidator
       try { const error = await response.json() as { detail?: unknown }; if (typeof error.detail === "string") detail = error.detail; } catch { /* do not expose upstream HTML */ }
       return { ok: false, error: `Forecast service (${response.status}): ${detail}` };
     }
-    return { ok: true, job: await response.json() as ForecastJob };
+    const job = await response.json() as ForecastJob;
+    return { ok: true, jobJson: JSON.stringify(job) };
   } catch { return { ok: false, error: "Forecast training service is unavailable. Historical analysis is unaffected; try again when the service is restored." }; }
 });
