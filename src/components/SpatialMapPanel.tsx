@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fetchSpatialSlice } from "@/lib/spatial/nasa.functions";
-import { canonicalValue, cellAt, spatialParameter, SPATIAL_PARAMETERS, sliceLabel, type Raster, type Slice, type SpatialCode, type SpatialMode } from "@/lib/spatial/data";
+import { annualMapValue, canonicalValue, cellAt, spatialParameter, SPATIAL_PARAMETERS, sliceLabel, type Raster, type Slice, type SpatialCode, type SpatialMode } from "@/lib/spatial/data";
 import type { Point } from "@/lib/trend/comparison";
 const CanvasMap = lazy(() => import("./SpatialCanvasMap"));
 const rasterCache = new Map<string, Raster>();
@@ -40,7 +40,7 @@ export function SpatialMapPanel({ a, b, compare, onUse, onHistory }: { a: Point;
      const bounds = image.getBoundingBox(), width = image.getWidth(), height = image.getHeight();
      const west = bounds[0], south = bounds[1], east = bounds[2], north = bounds[3];
      if (west === undefined || south === undefined || east === undefined || north === undefined) throw new Error("Missing raster coordinates.");
-     result = { values: Float32Array.from(raw as Float32Array, v => s.code === "PRECTOTCORR" && s.mode === "annual" ? (Number.isFinite(v) && v >= 0 ? v : NaN) : canonicalValue(v, s.code, s.year, s.mode === "monthly" ? s.month : undefined)), width, height, west, north, dx: (east - west) / width, dy: (north - south) / height, source: response.source, retrievedAt: response.retrievedAt, slice: s };
+     result = { values: Float32Array.from(raw as Float32Array, v => s.mode === "annual" ? annualMapValue(v, s.code, s.year) : canonicalValue(v, s.code, s.year, s.month)), width, height, west, north, dx: (east - west) / width, dy: (north - south) / height, source: response.source, retrievedAt: response.retrievedAt, slice: s };
     }
     if (result) { if (rasterCache.size >= 12) { const oldest = rasterCache.keys().next().value; if (oldest) rasterCache.delete(oldest); } rasterCache.set(key, result); }
    }

@@ -1,7 +1,7 @@
 // Offline preparation only; never runs during a browser/server request.
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { fromArrayBuffer } from "geotiff";
-import { canonicalValue, senPerDecade, serviceFor, spatialParameter, type SpatialCode } from "../src/lib/spatial/data";
+import { annualMapValue, senPerDecade, serviceFor, spatialParameter, type SpatialCode } from "../src/lib/spatial/data";
 const years = Array.from({ length: 20 }, (_, i) => 2005 + i);
 const directory = "public/spatial";
 await mkdir(directory, { recursive: true });
@@ -28,7 +28,7 @@ for (const code of codes) {
     const image = await (await fromArrayBuffer(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer)).getImage();
     width = image.getWidth(); height = image.getHeight(); bounds = image.getBoundingBox();
     const bands = await image.readRasters(); const raw = bands[0]; if (!raw) throw new Error("Missing numeric band");
-    grids.push(Float32Array.from(raw as Float32Array, v => code === "PRECTOTCORR" ? (Number.isFinite(v) && v >= 0 ? v : NaN) : canonicalValue(v, code, year)));
+    grids.push(Float32Array.from(raw as Float32Array, v => annualMapValue(v, code, year)));
     const hash = await crypto.subtle.digest("SHA-256", bytes as BufferSource);
     identities.push({ year, time, sha256: Buffer.from(hash).toString("hex") });
     console.log("retrieved", code, year);
