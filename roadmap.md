@@ -1,4 +1,8 @@
 # Worldwide explorer
+## PV Energy Yield
+- [ ] Implement canonical GHI-to-electricity model, complete years, common-year statistics and numerical tests.
+- [ ] Add shared-location system scenarios, monthly/annual graphs, assumptions and reproducibility exports.
+- [ ] Verify real NASA calculations, A/B, immutable results and phone layout; leave unpublished.
 ## Fisheries Environment Explorer
 - [ ] Verify public NASA/NOAA ocean metadata, efficient imagery and bounded numeric requests.
 - [ ] Add separate ocean decoding, monthly aggregation, coverage and descriptive seasonal trend tests.
