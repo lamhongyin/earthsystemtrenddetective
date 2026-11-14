@@ -1,7 +1,7 @@
 import { ClientOnly } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Download, Droplets, Loader2, RefreshCw } from "lucide-react";
+import { Download, Droplets, Loader2, RefreshCw, Satellite, RadioTower } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -85,7 +85,7 @@ export function RainfallPanel({ point }: { point: Point }) {
   }
   const c = result?.comparison;
   const isDemo = !!result?.series.some(s => s.demo);
-  return <section className="space-y-5" aria-label="Rainfall source investigation"><div className="flex items-center gap-2"><Droplets className="size-6 text-primary" /><h2 className="text-2xl font-semibold">POWER–IMERG rainfall investigation</h2></div>
+  return <section className="space-y-5" aria-label="Rainfall and Satellite/Terrestrial Communication Propagation Rain Attenuation Estimation"><div className="flex items-start gap-3"><div className="flex shrink-0 items-center gap-2 pt-1 text-primary"><Droplets aria-hidden="true" className="size-6" /><span title="Satellite communication"><Satellite aria-label="Satellite communication" className="size-6" /></span><span title="Terrestrial communication"><RadioTower aria-label="Terrestrial communication" className="size-6" /></span></div><h2 className="min-w-0 break-words text-2xl font-semibold">Rainfall and Satellite/Terrestrial Communication Propagation Rain Attenuation Estimation</h2></div>
     <div className="space-y-3 rounded-lg border border-primary/40 bg-card p-4">
       <h3 className="text-lg font-semibold">IMERG rainfall demonstration</h3>
       <p className="text-sm text-muted-foreground">For demonstration purposes only. Explore a bundled historical NASA IMERG regional sample covering January 2005–December 2024: 240 monthly observations for 102–104°E, 1–3°N. This sample is limited to this period and region and does not update automatically.</p>
