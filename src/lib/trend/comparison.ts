@@ -1,6 +1,7 @@
 import { analyzeAnnual, type TrendStats } from "./stats";
 import { annualize, parsePowerMonthly, type AnnualObservation, type MonthlyObservation } from "./parse";
-import { POWER_ENDPOINT, type ParameterDef } from "./config";
+import { POWER_ENDPOINT, SOLAR_CODE, CANONICAL_UNIT_VERSION, communityFor, type ParameterDef } from "./config";
+import { parseSolarMonthly, solarAnnual, type SolarMetadata } from "./solar";
 
 export type Point = { label: string; lat: number; lon: number; origin?: "search" | "preset" | "coordinates"; country?: boolean };
 export type Snapshot = { mode: "single" | "compare"; param: ParameterDef; a: Point; b: Point; start: number; end: number };
@@ -8,13 +9,16 @@ export type PointResult = {
   point: Point; monthly: MonthlyObservation[]; annual: AnnualObservation[];
   stats: TrendStats | null; individualError: string | null;
   retrievedAt: string; sourceUrl: string; returnedPoint: number[] | null;
+  solar?: { metadata: SolarMetadata; raw: MonthlyObservation[]; annual: (AnnualObservation & { total: number })[] };
+  sourceMetadata: { community: string; temporalResolution: string; canonicalUnitVersion: string; header: unknown };
 };
 export type Comparison = { years: number[]; a: AnnualObservation[]; b: AnnualObservation[]; statsA: TrendStats; statsB: TrendStats; meanA: number; meanB: number };
 export type Analysis = { snapshot: Snapshot; a?: PointResult; b?: PointResult; errors: Partial<Record<"A" | "B", string>> };
 
 export function makePointResult(payloadText: string, point: Point, s: Snapshot, retrievedAt: string): PointResult {
   const payload = JSON.parse(payloadText);
-  const monthly = parsePowerMonthly(payload, s.param.code, s.start, s.end);
+  const solar = s.param.code === SOLAR_CODE ? parseSolarMonthly(payload, s.start, s.end) : undefined;
+  const monthly = solar?.monthly ?? parsePowerMonthly(payload, s.param.code, s.start, s.end);
   const annual = annualize(monthly, s.param.aggregation);
   let stats: TrendStats | null = null, individualError: string | null = null;
   try { stats = analyzeAnnual(annual.map(r => r.year), annual.map(r => r.value)); }
@@ -22,8 +26,8 @@ export function makePointResult(payloadText: string, point: Point, s: Snapshot, 
   const coordinates: unknown = payload?.geometry?.coordinates;
   const returnedPoint = Array.isArray(coordinates) && coordinates.every(v => typeof v === "number" && Number.isFinite(v)) ? coordinates : null;
   const url = new URL(POWER_ENDPOINT);
-  url.search = new URLSearchParams({ parameters: s.param.code, community: "AG", latitude: String(point.lat), longitude: String(point.lon), start: String(s.start), end: String(s.end), format: "JSON" }).toString();
-  return { point, monthly, annual, stats, individualError, retrievedAt, sourceUrl: url.toString(), returnedPoint };
+  url.search = new URLSearchParams({ parameters: s.param.code, community: communityFor(s.param.code), latitude: String(point.lat), longitude: String(point.lon), start: String(s.start), end: String(s.end), format: "JSON" }).toString();
+  return { point, monthly, annual, stats, individualError, retrievedAt, sourceUrl: url.toString(), returnedPoint, sourceMetadata: { community: communityFor(s.param.code), temporalResolution: "monthly", canonicalUnitVersion: CANONICAL_UNIT_VERSION, header: payload.header ?? null }, ...(solar ? { solar: { metadata: solar.metadata, raw: solar.raw, annual: solarAnnual(monthly) } } : {}) };
 }
 
 export function alignCommonYears(a: AnnualObservation[], b: AnnualObservation[]) {
@@ -56,7 +60,7 @@ export function warnings(rows: AnnualObservation[], stats: TrendStats | null): s
   return out;
 }
 export function sameRequestedPoint(a: Point, b: Point) { return a.lat === b.lat && a.lon === b.lon; }
-export function requestKey(s: Snapshot, p: Point) { return ["power", s.param.code, p.lat, p.lon, s.start, s.end] as const; }
+export function requestKey(s: Snapshot, p: Point) { return ["power", s.param.code, p.lat, p.lon, s.start, s.end, communityFor(s.param.code), "monthly", CANONICAL_UNIT_VERSION] as const; }
 export function snapshotKey(s: Snapshot) {
   return JSON.stringify([s.mode, s.param.code, s.start, s.end, s.a, ...(s.mode === "compare" ? [s.b] : [])]);
 }
