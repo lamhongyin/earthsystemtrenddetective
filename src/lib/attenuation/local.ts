@@ -82,6 +82,7 @@ export function filledBands(points: EvaluatedPoint[], columns: number, rows: num
         const area = Math.abs(polygon.reduce((sum, a, i) => { const b = polygon[(i + 1) % polygon.length]; return sum + (b ? a[0] * b[1] - b[0] * a[1] : 0); }, 0));
         if (area < 1e-12) continue;
         const coordinates = polygon.map(p => [p[0], p[1]]); const first = coordinates[0]; if (first) coordinates.push([...first]);
+        if (features.length >= 32768) throw new Error("Contour output exceeds 32,768 pieces; use a smaller region, coarser grid or larger contour interval.");
         features.push({ type: "Feature", properties: { lowerDb, upperDb, rainFadeAllowanceMeets: marginDb === null ? null : upperDb !== null && upperDb <= marginDb }, geometry: { type: "Polygon", coordinates: [coordinates] } });
       }
     }

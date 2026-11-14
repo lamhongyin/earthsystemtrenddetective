@@ -30,6 +30,7 @@ export function RainAttenuationPanel() {
     w.onmessage = e => {
       const { id, type, data } = e.data;
       if (type === "point") { if (id === pointJob.current) { setPoint(data.point); setCurve(data.curve); } return; }
+      if (type === "error" && id === pointJob.current) { setError(data); return; }
       if (id !== pending.current) return;
       if (type === "status") { setStatus(data); return; }
       setBusy(false);
