@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { RainfallImport } from "./RainfallImport";
 import { checkImergAccess } from "@/lib/rainfall/access.functions";
 import { annualTotals, climatology, compareRainfall, contentHash, descriptiveTrend, powerSeries, powerSupport, type RainSeries } from "@/lib/rainfall/data";
+import { DEMO_META, demoAssetUrl, loadDemoSeries } from "@/lib/rainfall/demo";
 import { monthlyRainCsv, pairedMonthlyCsv, pairedAnnualCsv, metricsCsv, provenanceJson, type RainComparison } from "@/lib/rainfall/exports";
 import { fetchPowerMonthly } from "@/lib/trend/nasa.functions";
 import type { Point } from "@/lib/trend/comparison";
@@ -21,7 +22,7 @@ function saveOriginal(s: RainSeries) {
   // Original bytes can include user-supplied private links; use the reviewed provenance exports instead when suspicious.
   if (/token|password|authorization|credential|signature|(?:[?&])key=/i.test(s.originalText)) return;
   const url = URL.createObjectURL(new Blob([s.originalText], { type: "text/csv;charset=utf-8" }));
-  const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${s.sourceId}-original-scientific-export.csv`; anchor.click();
+  const anchor = document.createElement("a"); anchor.href = url; anchor.download = s.demo ? "imerg-demonstration-original-giovanni-export.csv" : `${s.sourceId}-original-scientific-export.csv`; anchor.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function RainGraph({ title, rows, axis, keys, unit }: { title: string; rows: object[]; axis: string; keys: { key: string; label: string }[]; unit: string }) {
@@ -31,7 +32,8 @@ export function RainfallPanel({ point }: { point: Point }) {
   const [source, setSource] = useState("POWER"), [type, setType] = useState("compare"), [spatial, setSpatial] = useState("point");
   const [start, setStart] = useState("2005"), [end, setEnd] = useState("2024"), [power, setPower] = useState<RainSeries | null>(null), [imerg, setImerg] = useState<RainSeries | null>(null);
   const [result, setResult] = useState<{ series: RainSeries[]; comparison: RainComparison | null; start: number; end: number; spatial: string; key: string; lat: number; lon: number } | null>(null);
-  const [busy, setBusy] = useState(false), [error, setError] = useState(""), [access, setAccess] = useState("Automatic IMERG retrieval is not connected. No verified Giovanni reference file is installed."), [checkedAt, setCheckedAt] = useState("");
+  const [busy, setBusy] = useState(false), [error, setError] = useState(""), [access, setAccess] = useState("A bundled IMERG demonstration is available for January 2005–December 2024 and the displayed study region. Automatic retrieval for other periods and regions is not connected."), [checkedAt, setCheckedAt] = useState("");
+  const [demoBusy, setDemoBusy] = useState(false), [demoError, setDemoError] = useState("");
   const fetchPower = useServerFn(fetchPowerMonthly), checkAccess = useServerFn(checkImergAccess), request = useRef(0);
   const key = JSON.stringify([point.lat, point.lon, source, type, spatial, start, end, power?.sha256, imerg?.sha256]), keyRef = useRef(key); keyRef.current = key;
   useEffect(() => () => { request.current++; }, []);
