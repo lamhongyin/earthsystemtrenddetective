@@ -23,6 +23,7 @@ export function validateMap(s: MapScenario) {
   if (!Number.isFinite(s.intervalDb) || s.intervalDb < 1 || s.intervalDb > 100) errors["intervalDb"] = "Contour interval: 1–100 dB (at most 64 bands).";
   if (s.marginDb !== null && (!Number.isFinite(s.marginDb) || s.marginDb < 0 || s.marginDb > 1000)) errors["marginDb"] = "Fade margin: 0–1000 dB, or leave empty.";
   if (s.link.mode === "satellite" && s.geometry === "geo") {
+    delete errors["elevationDeg"]; // Fixed reference angle is not an input to GEO geometry.
     if (!Number.isFinite(s.orbitalLongitudeDeg) || Math.abs(s.orbitalLongitudeDeg) > 180) errors["orbitalLongitudeDeg"] = "GEO orbital longitude: −180° to 180°.";
     if (!Number.isFinite(s.minElevationDeg) || s.minElevationDeg < 0 || s.minElevationDeg > 90) errors["minElevationDeg"] = "Minimum operating elevation: 0°–90°.";
   }

@@ -19,7 +19,7 @@ export function RainAttenuationPanel() {
   const [ready, setReady] = useState({ rain: false, height: false }), [remember, setRemember] = useState(false), [status, setStatus] = useState("Select official extracted files for local evaluation."), [error, setError] = useState(""), [busy, setBusy] = useState(false);
   const [result, setResult] = useState<MapResult | null>(null), [point, setPoint] = useState<EvaluatedPoint | null>(null), [curve, setCurve] = useState<CurvePoint[]>([]);
   const [inspectLat, setInspectLat] = useState("2"), [inspectLon, setInspectLon] = useState("103");
-  const worker = useRef<Worker | null>(null), seq = useRef(0), pending = useRef(0), pointJob = useRef(0), scenarioRef = useRef("");
+  const worker = useRef<Worker | null>(null), seq = useRef(0), pending = useRef(0), pointJob = useRef(0), scenarioRef = useRef(""), activeAction = useRef("");
   const rainInput = useRef<HTMLInputElement>(null), heightInput = useRef<HTMLInputElement>(null);
   const link: Scenario = { mode, frequencyGHz: numeric(values.frequency), pPercent: numeric(values.p), polarization, elevationDeg: numeric(values.elevation), altitudeKmAsl: numeric(values.altitude) / 1000, distanceKm: numeric(values.distance), antenna1KmAsl: numeric(values.h1) / 1000, antenna2KmAsl: numeric(values.h2) / 1000 };
   const scenario: MapScenario = { link, geometry: mode === "terrestrial" ? "reference" : geometry, orbitalLongitudeDeg: numeric(values.orbit), minElevationDeg: numeric(values.minimum), extent: { west: numeric(values.west), east: numeric(values.east), south: numeric(values.south), north: numeric(values.north) }, spacingDeg: numeric(values.spacing), intervalDb: numeric(values.interval), marginDb: values.margin.trim() ? Number(values.margin) : null };
@@ -40,12 +40,12 @@ export function RainAttenuationPanel() {
       if (type === "map") { if (JSON.stringify(data.scenario) !== scenarioRef.current) return; setResult(data); setPoint(null); setCurve([]); setStatus(`${data.validCount}/${data.points.length} valid grid nodes; ${data.features.length} filled contour pieces calculated locally.`); }
     };
     w.onerror = () => { setBusy(false); setError("Local calculation worker failed; reload and select the official files again."); };
-    const id = ++seq.current; pending.current = id; w.postMessage({ id, action: "restore" });
+    const id = ++seq.current; pending.current = id; activeAction.current = "restore"; setBusy(true); w.postMessage({ id, action: "restore" });
     return () => { w.terminate(); worker.current = null; };
   }, []);
-  useEffect(() => { if (busy) { worker.current?.postMessage({ id: ++seq.current, action: "cancel" }); pending.current = seq.current; setBusy(false); setStatus("Scenario changed; pending calculation cancelled."); } }, [scenarioKey]);
-  function operation(action: string, extra: object = {}) { const id = ++seq.current; pending.current = id; setBusy(true); setError(""); worker.current?.postMessage({ id, action, ...extra }); }
-  function load(kind: GridKind, file?: File) { if (!file) return; setResult(null); setPoint(null); setCurve([]); operation("load", { kind, file }); }
+  useEffect(() => { if (busy && activeAction.current === "calculate") { worker.current?.postMessage({ id: ++seq.current, action: "cancel" }); pending.current = seq.current; setBusy(false); setStatus("Scenario changed; pending calculation cancelled."); } }, [scenarioKey]);
+  function operation(action: string, extra: object = {}) { const id = ++seq.current; pending.current = id; pointJob.current = 0; activeAction.current = action; setBusy(true); setError(""); worker.current?.postMessage({ id, action, ...extra }); }
+  function load(kind: GridKind, file?: File) { if (!file) return; setReady(r => ({ ...r, [kind]: false })); setResult(null); setPoint(null); setCurve([]); operation("load", { kind, file }); }
   function inspect(lat: number, lon: number) {
     if (!result || !ready.rain || !ready.height) return;
     const b = result.scenario.extent;

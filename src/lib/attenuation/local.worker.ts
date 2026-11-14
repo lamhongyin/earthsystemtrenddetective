@@ -45,6 +45,8 @@ self.onmessage = async (event: MessageEvent<Message>) => {
     if (m.action === "remove") { generation++; rain = null; height = null; rainFile = null; heightFile = null; remember = false; await cache("clear"); send(m.id, "removed", null); return; }
     if (m.action === "remember") { remember = !!m.remember; if (remember) await saveIfOptedIn(); else await cache("clear"); send(m.id, "remembered", remember); return; }
     if (m.action === "load" && m.file && m.kind) {
+      if (m.kind === "rain") { rain = null; rainFile = null; } else { height = null; heightFile = null; }
+      if (remember) await cache("clear");
       const token = ++generation, values = await parse(m.file, m.kind, m.id, token); if (token !== generation) return;
       if (m.kind === "rain") { rain = values; rainFile = m.file; } else { height = values; heightFile = m.file; }
       await saveIfOptedIn(); send(m.id, "ready", { rain: !!rain, height: !!height, remembered: remember }); return;
