@@ -60,5 +60,5 @@ use the editor.
 - Rainfall source investigations use separate canonical calendar-month depth records in `src/lib/rainfall`, strict reviewed CSV imports and native-support matching; never feed depths to rate annualisation or substitute POWER for IMERG.
 - IMERG cloud catalogue discovery is not data retrieval; expose imports honestly until authenticated NASA numeric access is verified, and retain immutable source hashes, intervals and support for reproducible monthly research without a Python runtime.
 - Monthly CCDF uses strict survival of submitted depths and common paired months, never annual one-minute statistics.
-- ITU calculations use the same hash-verified worker for hosted originals or visitor files; retain optional local loading and opt-in IndexedDB to preserve scientific checks and privacy.
-- Short-interval rainfall imports stay in browser workers; chronological complete-window quantile-transfer research never replaces ITU inputs, because distribution estimates are not measured minute extremes.
+- ITU hosted/visitor files share hash-verified workers and opt-in IndexedDB for parity and privacy.
+- Local rainfall workers use held-out complete-window research, never ITU inputs: estimates are not measured extremes.
