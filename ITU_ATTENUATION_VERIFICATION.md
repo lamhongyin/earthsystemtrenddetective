@@ -6,6 +6,7 @@
 - All 212 tests passed, including pinned ITU parity, cache/export checks and five new rainfall scientific checks. Latest automatic compilation reported build OK.
 - Browser rainfall investigation used explicitly synthetic temporary CSVs only: 30 half-hour windows, 900 minutes, 21 training / 9 held-out windows. UI imports, curves and validation table worked with no page errors. Actual half-hourly IMERG and one-minute gauge files have NOT been supplied, despite the owner's intention to provide both; real-data conversion validation remains blocked.
 - No publication/deployment, paid service or new Python runtime. Source-grid asset installation is the explicitly requested exception to previous no-hosting requirements. Rainfall files stay session-local.
+- Final rerun after shortening point tooltip percentages: 390px page has no horizontal overflow; no page errors. Latest automatic build OK. Final focused regression: 94 tests passed. Actual rainfall validation still awaits both rainfall files; screenshots of synthetic controls are not evidence of real-data conversion accuracy.
 
 ## Previous implementation evidence (historical)
 
