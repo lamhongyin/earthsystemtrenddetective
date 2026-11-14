@@ -233,3 +233,6 @@
 .hotspot-swatch-combined { background: var(--hotspot-combined); }
 
 .ocean-legend { background: linear-gradient(to right, var(--ocean-0), var(--ocean-1), var(--ocean-2), var(--ocean-3), var(--ocean-4)); }
+
+.artificial-fish-symbol { color: var(--foreground); background: var(--card); border: 2px solid var(--primary); border-radius: 50%; display: grid; place-items: center; }
+#fisheries-map-display:fullscreen { padding: 1rem; }
