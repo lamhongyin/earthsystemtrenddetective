@@ -1,5 +1,5 @@
 export type ForecastModel = "auto" | "seasonal_naive" | "gradient_boosted";
-export type ForecastSettings = { parameter: "T2M" | "PRECTOTCORR" | "RH2M" | "WS10M"; latitude: number; longitude: number; start: string; end: string; horizon: number; level: 0.8 | 0.9 | 0.95; model: ForecastModel };
+export type ForecastSettings = { parameter: "T2M" | "PRECTOTCORR" | "RH2M" | "WS10M" | "ALLSKY_SFC_SW_DWN"; latitude: number; longitude: number; start: string; end: string; horizon: number; level: 0.8 | 0.9 | 0.95; model: ForecastModel };
 export type ForecastRequest = ForecastSettings & { observations: { month: string; value: number }[]; provenance: Record<string, unknown> };
 export type ForecastMetric = { count: number; mae: number; rmse: number; mase: number | null; baselineMae: number; skill: number | null; coverage: number; width: number };
 export type ForecastPrediction = { month: string; lead: number; prediction: number; lower: number; upper: number; level: number };

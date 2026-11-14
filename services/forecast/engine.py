@@ -7,7 +7,7 @@ import numpy as np
 import sklearn
 from sklearn.ensemble import GradientBoostingRegressor
 
-VERSION = "direct-monthly-v1"
+VERSION = "direct-monthly-v2-solar"
 CONFIG = dict(n_estimators=40, learning_rate=0.05, max_depth=2, min_samples_leaf=5, loss="squared_error", random_state=42)
 MIN_SAMPLES = 36
 ERROR_COUNT = 24
@@ -52,7 +52,7 @@ def segment(rows, start, end, parameter):
 
 
 def postprocess(value, parameter):
-    if parameter in ("PRECTOTCORR", "WS10M"):
+    if parameter in ("PRECTOTCORR", "WS10M", "ALLSKY_SFC_SW_DWN"):
         return max(0.0, float(value))
     if parameter == "RH2M":
         return min(100.0, max(0.0, float(value)))
@@ -113,6 +113,8 @@ def metrics(rows):
 
 def forecast(request, progress=lambda s: None):
     h, level, parameter = request["horizon"], request["level"], request["parameter"]
+    if parameter == "ALLSKY_SFC_SW_DWN" and any(r["value"] < 0 and r["value"] > -900 for r in request["observations"]):
+        raise ValueError("Unexplained negative solar observations are not valid training data.")
     indices, y, data_info = segment(request["observations"], request["start"], request["end"], parameter)
     n, length = len(y), ERROR_COUNT + h - 1
     required = max(120, 47 + h + 3 * length)
@@ -169,6 +171,11 @@ def forecast(request, progress=lambda s: None):
         clipped["forecast"] += int(raw != point)
         clipped["intervalBounds"] += int(low != point - q[lead]) + int(high != point + q[lead])
         predictions.append({"month": month_string(indices[-1] + lead), "lead": lead, "prediction": point, "lower": low, "upper": high, "level": level})
+    if parameter == "ALLSKY_SFC_SW_DWN":
+        for p in predictions:
+            i = month_index(p["month"])
+            days = calendar.monthrange(i // 12, i % 12 + 1)[1]
+            p.update(days=days, monthlyTotal=p["prediction"] * days, monthlyTotalLower=p["lower"] * days, monthlyTotalUpper=p["upper"] * days)
     test = evaluations["test"]
     overall = metrics(test)
     per_lead = [{"lead": lead, **metrics([r for r in test if r["lead"] == lead]), "calibrationQuantile": q[lead]} for lead in range(1, h + 1)]
@@ -177,6 +184,8 @@ def forecast(request, progress=lambda s: None):
                 "Local univariate monthly aggregates, not daily weather, flood warnings or emissions-scenario climate projections.",
                 "Empirical conformal-style intervals: temporal dependence, shifts and refitting mean future coverage is not guaranteed.",
                 "Overlapping rolling origins are dependent, not independent experiments; only 24 errors per lead in each block."]
+    if parameter == "ALLSKY_SFC_SW_DWN":
+        warnings.append("Experimental monthly solar-resource forecast; not hourly cloud conditions, a climate scenario or guaranteed PV electricity. Monthly total bounds are deterministic daily-energy rescalings; annual uncertainty is unavailable.")
     if overall["skill"] is not None and overall["skill"] < 0:
         warnings.append("Selected model performs worse than the seasonal benchmark on untouched testing.")
     if overall["coverage"] < level:
@@ -201,5 +210,5 @@ def forecast(request, progress=lambda s: None):
                                 "training": "At origin t fit each lead h on origins 11..t-h, labels y[origin+h] <= t. Refit within every expanding fold and on all eligible history for inference.",
                                 "intervalMethod": "Lead-specific calibration absolute error order statistic k=ceil((n+1)*level); no test residuals used.",
                                 "mase": "Mean of test absolute errors divided by each fold's observed training mean |y[t]-y[t-12]|; unavailable if any fold scale is zero.",
-                                "postprocessing": "Rainfall/wind >=0; RH in [0,100]; temperature unclipped. Same rules in all blocks and inference.",
+                                "postprocessing": "Rainfall/wind/solar >=0; RH in [0,100]; temperature unclipped. Same rules in all blocks and inference.",
                                 "blockIsolation": "Target date blocks disjoint; 24 origins per block; length 24+H-1 ensures every lead stays inside its block."}}

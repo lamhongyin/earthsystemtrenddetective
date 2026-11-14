@@ -17,7 +17,7 @@ class Observation(BaseModel):
     value: float = Field(allow_inf_nan=False)
 
 class Request(BaseModel):
-    parameter: Literal["T2M", "PRECTOTCORR", "RH2M", "WS10M"]
+    parameter: Literal["T2M", "PRECTOTCORR", "RH2M", "WS10M", "ALLSKY_SFC_SW_DWN"]
     latitude: float = Field(ge=-90, le=90, allow_inf_nan=False)
     longitude: float = Field(ge=-180, le=180, allow_inf_nan=False)
     start: str = Field(pattern=r"^\d{4}-(0[1-9]|1[0-2])$")
@@ -30,8 +30,13 @@ class Request(BaseModel):
 
     @model_validator(mode="after")
     def check_period(self):
-        if self.start > self.end or not 1981 <= int(self.start[:4]) <= int(self.end[:4]) <= 2025:
+        if self.start > self.end or not (1984 if self.parameter == "ALLSKY_SFC_SW_DWN" else 1981) <= int(self.start[:4]) <= int(self.end[:4]) <= 2025:
             raise ValueError("Training years must be ordered between 1981 and 2025.")
+        if self.parameter == "ALLSKY_SFC_SW_DWN":
+            if self.provenance.get("normalizedUnit") != "kWh/m²/day" or self.provenance.get("community") != "RE":
+                raise ValueError("Solar forecasts require validated RE monthly mean daily energy in kWh/m²/day.")
+            if any(r.value < 0 for r in self.observations):
+                raise ValueError("Negative solar observations must be flagged and excluded, never replaced by zero.")
         months = [r.month for r in self.observations]
         if len(months) != len(set(months)):
             raise ValueError("Duplicate monthly observations are not permitted.")
