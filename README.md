@@ -1,5 +1,9 @@
 # Welcome to your Lovable project
 
+## Fisheries NASA-direct repair
+
+Fisheries now serves checksum-verified prepared NASA MODIS assets, not NOAA/ERDDAP requests. NASA downloads are a separate bounded Python preparation step; see [FISHERIES_PREPARATION.md](FISHERIES_PREPARATION.md). No verified scientific bundle is installed yet: authenticated Earthdata files are required before map/history acceptance or publication. No unattended refresh is configured.
+
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable

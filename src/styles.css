@@ -88,12 +88,12 @@
 }
 
 :root {
-  --ocean-0: oklch(0.5 0.25 285);
-  --ocean-1: oklch(0.52 0.24 265);
-  --ocean-2: oklch(0.83 0.14 190);
-  --ocean-3: oklch(0.8 0.24 140);
-  --ocean-4: oklch(0.94 0.19 105);
-  --ocean-5: oklch(0.63 0.25 30);
+  --ocean-raster-colors: 36,61,128;51,154,192;62,181,110;242,198,90;183,53,66;
+  --ocean-0: #243d80;
+  --ocean-1: #339ac0;
+  --ocean-2: #3eb56e;
+  --ocean-3: #f2c65a;
+  --ocean-4: #b73542;
   --hotspot-warming: oklch(0.59 0.18 35);
   --hotspot-drying: oklch(0.52 0.13 230);
   --hotspot-combined: oklch(0.48 0.18 335);
@@ -232,4 +232,4 @@
 .hotspot-swatch-drying { background: var(--hotspot-drying); }
 .hotspot-swatch-combined { background: var(--hotspot-combined); }
 
-.ocean-legend { background: linear-gradient(to right, var(--ocean-0), var(--ocean-1), var(--ocean-2), var(--ocean-3), var(--ocean-4), var(--ocean-5)); }
+.ocean-legend { background: linear-gradient(to right, var(--ocean-0), var(--ocean-1), var(--ocean-2), var(--ocean-3), var(--ocean-4)); }

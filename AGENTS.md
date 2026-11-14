@@ -51,8 +51,8 @@ use the editor.
 - Hotspot screening runs in a cancellable browser worker over hash-verified annual NASA arrays; keep OLS screening separate from Sen-slope spatial products and retain exact annual evidence for every selected cell.
 - Hotspot thresholds use one jointly eligible population, true-cell spherical area weights and inverse-CDF quantiles; four-edge grouping wraps longitude while missing gaps remain disconnected, to preserve reproducible relative rankings.
 
-- Ocean sources stay in a separate bounded ERDDAP adapter using approved NASA-origin datasets and NOAA monthly MUR derivatives; no Python hosting dependency or POWER ocean aliases, to preserve product meaning and independent availability.
-- Ocean region means use a fixed open-sea mask and clipped spherical area with explicit coverage; month-effect descriptive slopes never imply significance or fish occurrence, to preserve scientific interpretation.
+- Fisheries serves independently loaded checksum-verified versioned NASA bundles from app assets; offline Python preparation publishes the manifest last, so upstream outages cannot invalidate saved data and request runtimes never execute Python.
+- Fisheries MODIS source grids, native-cell histories and area-weighted overview/region coverage remain explicit and distinct; descriptive month-effect slopes never imply significance or fish occurrence, preventing old MUR assumptions or arbitrary-point history substitution.
 
 - PV calculations reuse canonical POWER solar point records and shared A/B coordinates; immutable constant-capacity/PR snapshots calculate horizontal resource electricity in pure TypeScript, to avoid duplicate efficiency/loss factors and forecast-host dependence.
 - PV annual statistics use complete 12-month electricity totals and common-year alignment before fitting existing trend helpers, to preserve calendar duration and comparison parity.

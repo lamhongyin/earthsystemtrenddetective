@@ -1,4 +1,10 @@
 # Worldwide explorer
+## Fisheries NASA-direct repair
+- [x] Replace NOAA runtime with independently loaded, checksum-verified app-hosted NASA bundles.
+- [x] Add bounded NASA preparation/import, quality checks, provenance, and atomic refresh code (real-file execution remains unverified).
+- [ ] Prepare a real common-month map and supported histories (requires authenticated NASA scientific downloads).
+- [x] Test manifest isolation/integrity and honest empty-archive desktop/mobile preview with upstreams blocked; leave unpublished.
+- [ ] Verify real maps, values, histories/exports, saved-data outage resilience and native quality against NASA files (blocked by missing authenticated scientific downloads).
 ## PV Energy Yield
 - [x] Implement canonical GHI-to-electricity model, complete years, common-year statistics and numerical tests.
 - [x] Add shared-location system scenarios, monthly/annual graphs, assumptions and reproducibility exports.
@@ -8,7 +14,7 @@
 - [x] Verify public NASA/NOAA ocean metadata, efficient imagery and bounded numeric requests.
 - [x] Add separate ocean decoding, monthly aggregation, coverage and descriptive seasonal trend tests.
 - [x] Implement ocean maps, point/region histories, matched A/B comparison and provenance exports.
-- [ ] Complete final corrected ocean A/B and region validation (blocked by NOAA temporary 503 throttling; both maps and initial point histories verified).
+- Superseded: old NOAA-dependent region verification is replaced by the NASA-direct repair above.
 ## Environmental Hotspot Explorer
 - [x] Prepare verified annual numeric temperature/rainfall arrays and provenance.
 - [x] Implement completeness, OLS, area-weighted thresholds and four-edge connected areas with scientific tests.

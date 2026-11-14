@@ -1,0 +1,6 @@
+earthaccess==0.15.1
+xarray==2025.11.0
+netCDF4==1.7.3
+numpy==2.3.4
+requests==2.32.5
+global-land-mask==1.0.0

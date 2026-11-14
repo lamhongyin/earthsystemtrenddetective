@@ -1,8 +1,7 @@
-export const OCEAN_VERSION = "ocean-month-effects-v1";
-export const ERDDAP = "https://coastwatch.pfeg.noaa.gov/erddap";
+export const OCEAN_VERSION = "nasa-prepared-modis-v2";
 export const OCEAN_SOURCES = {
-  sst: { id: "jplMURSST41mday", variable: "sst", unit: "°C", originalUnit: "degree_C", resolution: 0.01, label: "Sea-surface temperature", producer: "NASA JPL MUR v4.1; NOAA monthly derivative", low: -2, high: 35 },
-  chlorophyll: { id: "erdMH1chlamday_R2022SQ", variable: "chlor_a", unit: "mg/m³", originalUnit: "mg m-3", resolution: 1 / 24, label: "Chlorophyll-a", producer: "NASA MODIS Aqua Level-3 monthly composite", low: 0.03, high: 30 },
+  sst: { id: "MODISA_L3m_SST", variable: "sst", unit: "°C", originalUnit: "degree_C", resolution: 1 / 12, label: "MODIS Aqua monthly SST · 11 µm daytime", producer: "NASA OB.DAAC, MODIS Aqua R2019.0", low: -2, high: 35 },
+  chlorophyll: { id: "MODISA_L3m_CHL", variable: "chlor_a", unit: "mg/m³", originalUnit: "mg m-3", resolution: 1 / 12, label: "Chlorophyll-a", producer: "NASA OB.DAAC, MODIS Aqua 2022.0", low: 0.03, high: 30 },
 } as const;
 export type OceanCode = keyof typeof OCEAN_SOURCES;
 export type OceanBounds = { south: number; north: number; west: number; east: number };
@@ -16,7 +15,7 @@ export const daysInMonth = (month: string) => new Date(Date.UTC(Number(month.sli
 export function decodeOcean(raw: number, unit: string, fill: number, minimum = -Infinity, maximum = Infinity) {
   if (!Number.isFinite(raw) || raw === fill || raw < minimum || raw > maximum) return null;
   if (unit === "K" || unit === "kelvin") return raw - 273.15;
-  if (unit === "degree_C" || unit === "degrees_C" || unit === "mg m-3") return raw;
+  if (unit === "degree_C" || unit === "degrees_C" || unit === "degrees Celsius" || unit === "mg m-3") return raw;
   throw new Error("Unsupported ocean source units.");
 }
 export function monthRange(start: number, end: number) { return Array.from({ length: (end - start + 1) * 12 }, (_, i) => `${start + Math.floor(i / 12)}-${String(i % 12 + 1).padStart(2, "0")}`); }
