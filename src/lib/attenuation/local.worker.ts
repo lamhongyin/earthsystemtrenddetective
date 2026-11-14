@@ -1,5 +1,7 @@
 import { LOCAL_INPUTS, evaluate, filledBands, pointCurve, provenance, validateMap, type GridKind, type LocalGrids, type MapScenario, type MapResult } from "./local";
-type Message = { id: number; action: "load" | "restore" | "remember" | "remove" | "calculate" | "point" | "cancel"; kind?: GridKind; file?: File; remember?: boolean; scenario?: MapScenario; lat?: number; lon?: number };
+import rainAsset from "@/assets/itu/R001.TXT.asset.json";
+import heightAsset from "@/assets/itu/h0.txt.asset.json";
+type Message = { id: number; action: "hosted" | "load" | "restore" | "remember" | "remove" | "calculate" | "point" | "cancel"; kind?: GridKind; file?: File; remember?: boolean; scenario?: MapScenario; lat?: number; lon?: number };
 let rain: Float64Array | null = null, height: Float64Array | null = null;
 let rainFile: File | null = null, heightFile: File | null = null;
 let remember = false, generation = 0;
@@ -50,6 +52,23 @@ self.onmessage = async (event: MessageEvent<Message>) => {
   const m = event.data;
   if (m.action === "cancel") { generation++; return; }
   try {
+    if (m.action === "hosted") {
+      const token = ++generation; resetMemory();
+      const files: Partial<Record<GridKind, File>> = {}, arrays: Partial<Record<GridKind, Float64Array>> = {};
+      for (const kind of ["rain", "height"] as const) {
+        const asset = kind === "rain" ? rainAsset : heightAsset;
+        send(m.id, "status", `Downloading ${LOCAL_INPUTS[kind].name} for on-device verification…`);
+        const response = await fetch(asset.url, { signal: AbortSignal.timeout(60000) });
+        if (!response.ok) throw new Error("Hosted ITU download failed; use official local files instead.");
+        const blob = await response.blob(); if (token !== generation) return;
+        if (blob.size !== asset.size) throw new Error("Hosted ITU file size differs from the installed original.");
+        const file = new File([blob], LOCAL_INPUTS[kind].name, { type: "text/plain" });
+        files[kind] = file; arrays[kind] = await parse(file, kind, m.id, token);
+      }
+      if (token !== generation) return;
+      rain = arrays.rain ?? null; height = arrays.height ?? null; rainFile = files.rain ?? null; heightFile = files.height ?? null;
+      readiness(m.id); return;
+    }
     if (m.action === "remove") { generation++; resetMemory(); send(m.id, "removed", { storageCleared: false, pending: true }); const warning = await clearSaved(); send(m.id, "removed", { storageCleared: !warning, warning, pending: false }); return; }
     if (m.action === "remember") { remember = !!m.remember; const warning = remember ? await saveIfOptedIn() : await clearSaved(); send(m.id, "remembered", { remembered: remember, warning }); return; }
     if (m.action === "load" && m.file && m.kind) {
