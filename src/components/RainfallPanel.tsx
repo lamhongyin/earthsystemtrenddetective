@@ -20,7 +20,9 @@ function saveOriginal(s: RainSeries) {
   if (!s.originalText) return;
   // Original bytes can include user-supplied private links; use the reviewed provenance exports instead when suspicious.
   if (/token|password|authorization|credential|signature|(?:[?&])key=/i.test(s.originalText)) return;
-  downloadCsv(`${s.sourceId}-original-scientific-export.csv`, s.originalText);
+  const url = URL.createObjectURL(new Blob([s.originalText], { type: "text/csv;charset=utf-8" }));
+  const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${s.sourceId}-original-scientific-export.csv`; anchor.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function RainGraph({ title, rows, axis, keys, unit }: { title: string; rows: object[]; axis: string; keys: { key: string; label: string }[]; unit: string }) {
   return <section className="space-y-2"><h3 className="text-lg font-semibold">{title}</h3><p className="text-xs text-muted-foreground">{unit}</p><div className="h-[270px] min-w-0"><ResponsiveContainer width="100%" height="100%"><LineChart data={rows} margin={{ top: 5, right: 10, bottom: 10, left: 0 }}><CartesianGrid stroke="var(--border)" /><XAxis dataKey={axis} minTickGap={45} tick={{ fontSize: 10 }} /><YAxis width={55} tick={{ fontSize: 10 }} /><Tooltip formatter={(v: number) => [`${v.toFixed(2)} ${unit}`]} /><Legend />{keys.map((k, i) => <Line key={k.key} dataKey={k.key} name={k.label} stroke={i === 0 ? "var(--primary)" : "var(--comparison-b)"} strokeWidth={2} dot={false} connectNulls={false} />)}</LineChart></ResponsiveContainer></div></section>;

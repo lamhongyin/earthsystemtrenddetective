@@ -4,7 +4,7 @@ export const MAX_CSV_BYTES = 2 * 1024 * 1024;
 export type CsvInspection = { headers: string[]; metadata: Record<string, string>; table: string[][]; text: string; suggestedDate: string; suggestedValue: string };
 export function inspectCsv(text: string): CsvInspection {
   if (new TextEncoder().encode(text).length > MAX_CSV_BYTES) throw new Error("CSV limit is 2 MB.");
-  const result = Papa.parse<string[]>(text.replace(/^\uFEFF/, ""), { skipEmptyLines: "greedy" });
+  const result = Papa.parse<string[]>(text.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n"), { skipEmptyLines: "greedy", delimiter: ",", newline: "\n" });
   if (result.errors.length) throw new Error(`Malformed CSV: ${result.errors[0]?.message}`);
   const rows = result.data;
   const index = rows.findIndex(r => r.some(v => /^(time|date|month|datetime|timestamp)$/i.test(v.trim())) && r.length >= 2);
@@ -23,6 +23,7 @@ export function safeSourceLink(value: string) {
   return u.href;
 }
 export async function importGiovanni(csv: CsvInspection, review: ImportReview): Promise<RainSeries> {
+  if (/token\s*[=:]|password\s*[=:]|authorization\s*[=:]|credential\s*[=:]|signature\s*[=:]|[?&]key=/i.test(csv.text + JSON.stringify(review))) throw new Error("Remove credential-bearing metadata or URLs before importing a scientific export.");
   validBounds(review.support.bounds);
   if (!review.intervalConfirmed) throw new Error("Confirm that each row represents a complete calendar month, not a daily or partial-month interval.");
   if (!review.citation.trim() || !review.timeConvention.trim() || !review.support.mask.trim() || !review.support.aggregation.trim() || !review.support.resolution.trim() || !review.support.spatialCoverage.trim()) throw new Error("Complete the source and spatial metadata review.");
