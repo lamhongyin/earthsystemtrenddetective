@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Earth Trend Detective
+- Scientific logic lives in `src/lib/trend/` (pure TS ports of the SciPy starter), validated by `trend.test.ts` against a SciPy-generated fixture; keep parity tests passing when touching stats.
+- NASA POWER is fetched via a same-origin server function proxying only the fixed monthly endpoint, because browser CORS/deploy behavior is not guaranteed.
