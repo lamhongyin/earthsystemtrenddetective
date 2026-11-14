@@ -26,8 +26,8 @@ describe("Installed NASA January 2024 chlorophyll sample", () => {
     useInstalledArchive();
     const sst = installed.sources.sst;
     expect(sst?.metadata.unit).toBe("°C");
-    expect(sst?.provenance.inputSha256).toBe("d8d49bf5c558fd74e0c7fafd13cae3fb87474f10735ba481624c0e81ffb58832");
-    expect(sst?.provenance.sourceTimeCoverageStart).toBe("2024-01-01T00:10:01.000Z");
+    expect(sst?.provenance["inputSha256"]).toBe("d8d49bf5c558fd74e0c7fafd13cae3fb87474f10735ba481624c0e81ffb58832");
+    expect(sst?.provenance["sourceTimeCoverageStart"]).toBe("2024-01-01T00:10:01.000Z");
     for (const [lat,lon,value] of [[1.8,104.5,28.244998931884766],[5.05,110.05,27.69999885559082],[2.8,101,29.78999900817871]]) {
       if (lat === undefined || lon === undefined) throw new Error("Invalid point");
       const records = await preparedHistory({lat,lon},2024,2024);

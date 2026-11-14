@@ -24,7 +24,7 @@ export function FisheriesPanel({ onUse }: { onUse: (id: "A" | "B", point: Point)
   const metaFn = fetchOceanMetadata, historyFn = fetchOceanHistory, imageFn = fetchOceanImage;
   const [combined, setCombined] = useState(true), [fish, setFish] = useState(true);
   const [meta, setMeta] = useState<OceanMetadata[] | null>(null), [code, setCode] = useState<OceanCode>("sst"), [month, setMonth] = useState("");
-  const [layer, setLayer] = useState<Layer | null>(null), [opacity, setOpacity] = useState(75), [view, setView] = useState(1), [error, setError] = useState<string | null>(null), [busy, setBusy] = useState(false), [retry, setRetry] = useState(0);
+  const [layer, setLayer] = useState<Layer | null>(null), [opacity, setOpacity] = useState(75), [view, setView] = useState(-1), [error, setError] = useState<string | null>(null), [busy, setBusy] = useState(false), [retry, setRetry] = useState(0);
   const [metaError, setMetaError] = useState<string | null>(null), [imageError, setImageError] = useState<string | null>(null), [imageBusy, setImageBusy] = useState(false), [imageRetry, setImageRetry] = useState(0), [updated, setUpdated] = useState("");
   const [a, setA] = useState<OceanTarget>({ lat: 1.8, lon: 104.5 }), [b, setB] = useState<OceanTarget | null>({ lat: 5.05, lon: 110.05 }), [active, setActive] = useState<"A" | "B">("A");
   const [start, setStart] = useState("2005"), [end, setEnd] = useState("2024"), [run, setRun] = useState<Run | null>(null), [drawing, setDrawing] = useState(false), [selected, setSelected] = useState<{ lat: number; lon: number; records?: OceanRecord[]; error?: string } | null>(null);
