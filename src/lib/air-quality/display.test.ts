@@ -1,0 +1,14 @@
+import { describe, expect, it } from "vitest";
+import { latestAt, peakIndex, selectedHours, sameGrid, alignedSeries } from "./display";
+import { hourlyAirCsv, indexAirCsv } from "./exports";
+import type { AirResult, AirWindow } from "./types";
+const win: AirWindow = { start: "2026-11-13T10:00:00Z", end: "2026-11-14T10:00:00Z", validHours: 24, meanPm25: 35.49, truncatedPm25: 35.4, aqi: 100, aboveScale: false, category: "Moderate" };
+const r: AirResult = { source: "NASA GEOS-CF", dataType: "forecast", modelVersion: "v2", collection: "surface", snapshotId: "run1", initializedAt: null, retrievedAt: "2026-11-14T10:00:00Z", sourceUrl: "https://example.org", sourceObjects: {}, requestedPoint: { latitude: 1, longitude: -180 }, gridPoint: { latitude: 1, longitude: -180 }, variable: "pm25_rh35", variableDefinition: "RH35", surfaceLayer: 72, unit: "µg/m³", originalUnit: "ug m-3", conversionFactor: 1, indexStandard: "EPA-403/B-26-003", indexScope: "PM2.5 only", completenessPolicy: "strict", temporalDefinition: "midpoint", documentation: "", coverageStart: "2026-11-14T09:00:00Z", coverageEnd: "2026-11-14T12:00:00Z", requestedHours: 120, availableFutureHours: 2, forecastWindowStart: "2026-11-14T10:00:00Z", forecastWindowEnd: "2026-11-19T10:00:00Z", hours: [9, 10, 11].map(h => ({ intervalStart: `2026-11-14T${h.toString().padStart(2,"0")}:00:00Z`, intervalEnd: `2026-11-14T${(h+1).toString().padStart(2,"0")}:00:00Z`, originalTime: `2026-11-14T${h.toString().padStart(2,"0")}:30:00Z`, pm25: h === 11 ? null : 0 })), windows24h: [win], daily: [], warnings: [] };
+describe("Air Quality display safeguards", () => {
+  it("does not call the last future hour today's estimate", () => expect(latestAt(r.hours, h => h.intervalEnd, Date.parse("2026-11-14T10:30:00Z"))?.intervalEnd).toBe("2026-11-14T10:00:00Z"));
+  it("limits five days to actual remaining hours", () => expect(selectedHours(r, 120, Date.parse("2026-11-14T10:30:00Z"))).toHaveLength(2));
+  it("above-scale peaks beat numeric indices", () => expect(peakIndex([win, { ...win, aboveScale: true, aqi: null }])?.aboveScale).toBe(true));
+  it("identifies one shared source cell only on the same run", () => { expect(sameGrid(r, r)).toBe(true); expect(sameGrid(r, { ...r, snapshotId: "run2" })).toBe(false); });
+  it("aligns comparison intervals without creating zero values", () => { const rows = alignedSeries([r, { ...r, hours: r.hours.slice(2) }], "hourly", 24, Date.parse("2026-11-14T10:00:00Z")); expect(rows).toHaveLength(1); expect(rows[0]?.A).toBeNull(); expect(rows[0]?.B).toBeNull(); });
+  it("exports unavailable concentrations blank and exact index precision", () => { expect(hourlyAirCsv(r)).toContain("2026-11-14T11:30:00Z,,µg/m³"); expect(indexAirCsv(r)).toContain("24,35.49,35.4,100,Moderate,false,PM2.5 only,EPA-403/B-26-003,run1"); });
+});

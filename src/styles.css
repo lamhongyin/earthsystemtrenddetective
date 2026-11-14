@@ -66,6 +66,12 @@
   --color-notice: var(--notice);
   --color-notice-foreground: var(--notice-foreground);
   --color-success: var(--success);
+  --color-aqi-good: var(--aqi-good);
+  --color-aqi-moderate: var(--aqi-moderate);
+  --color-aqi-sensitive: var(--aqi-sensitive);
+  --color-aqi-unhealthy: var(--aqi-unhealthy);
+  --color-aqi-very-unhealthy: var(--aqi-very-unhealthy);
+  --color-aqi-hazardous: var(--aqi-hazardous);
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -81,6 +87,12 @@
 }
 
 :root {
+  --aqi-good: oklch(0.4 0.12 145);
+  --aqi-moderate: oklch(0.45 0.10 90);
+  --aqi-sensitive: oklch(0.48 0.14 55);
+  --aqi-unhealthy: oklch(0.48 0.19 25);
+  --aqi-very-unhealthy: oklch(0.42 0.16 310);
+  --aqi-hazardous: oklch(0.35 0.14 5);
   --comparison-b: oklch(0.62 0.17 50);
   --map-a: #2166ac;
   --map-b: #c65d13;
@@ -128,6 +140,12 @@
 }
 
 .dark {
+  --aqi-good: oklch(0.8 0.14 145);
+  --aqi-moderate: oklch(0.85 0.14 90);
+  --aqi-sensitive: oklch(0.8 0.14 55);
+  --aqi-unhealthy: oklch(0.8 0.15 25);
+  --aqi-very-unhealthy: oklch(0.8 0.14 310);
+  --aqi-hazardous: oklch(0.8 0.14 5);
   --comparison-b: oklch(0.77 0.17 55);
   --google-auth-background: #131314;
   --google-auth-border: #8e918f;
