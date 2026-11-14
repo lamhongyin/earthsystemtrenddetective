@@ -1,4 +1,10 @@
 # Worldwide explorer
+## Giovanni / IMERG monthly rainfall comparison
+- [ ] Verify a real Johor IMERG Final v07 retrieval or Giovanni export; record exact access limitations.
+- [ ] Implement strict import, canonical monthly totals, matched source metrics, complete-year descriptive trends and provenance.
+- [ ] Add source comparison, rainfall graphs, downloads and geography-safe point/region states.
+- [ ] Test scientific rules, live retrieval/import flows and mobile preview; do not publish.
+- Fisheries data work is deferred until the user says “Fisheries data problem”.
 ## Fisheries NASA-direct repair
 - [x] Replace NOAA runtime with independently loaded, checksum-verified app-hosted NASA bundles.
 - [x] Add bounded NASA preparation/import, quality checks, provenance, and atomic refresh code (real-file execution remains unverified).
