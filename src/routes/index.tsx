@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LOCATIONS, MAX_YEAR, MIN_YEAR, PARAMETERS, validateCoords, validatePeriod } from "@/lib/trend/config";
+import { LOCATIONS, MAX_YEAR, minYearFor, PARAMETERS, validateCoords, validatePeriod } from "@/lib/trend/config";
 import { fetchPowerMonthly } from "@/lib/trend/nasa.functions";
 import { makePointResult, requestKey, snapshotKey, type Analysis, type Point, type Snapshot } from "@/lib/trend/comparison";
 import { LocationPicker, draftPoint, numericPoint } from "@/components/LocationPicker";
@@ -48,7 +48,7 @@ function Index() {
   const snapshot: Snapshot = { mode, param, a: pointA, b: pointB, start: Number(startYear), end: Number(endYear) };
   const key = snapshotKey(snapshot), draftKey = useRef(key); draftKey.current = key;
   const stale = !!result && snapshotKey(result.snapshot) !== key;
-  const validation = validateCoords(pointA.lat, pointA.lon) ? `Location A: ${validateCoords(pointA.lat, pointA.lon)}` : mode === "compare" && validateCoords(pointB.lat, pointB.lon) ? `Location B: ${validateCoords(pointB.lat, pointB.lon)}` : validatePeriod(snapshot.start, snapshot.end);
+  const validation = validateCoords(pointA.lat, pointA.lon) ? `Location A: ${validateCoords(pointA.lat, pointA.lon)}` : mode === "compare" && validateCoords(pointB.lat, pointB.lon) ? `Location B: ${validateCoords(pointB.lat, pointB.lon)}` : validatePeriod(snapshot.start, snapshot.end, code);
   useEffect(() => () => { reqId.current++; }, []);
   async function run(retry?: "A" | "B") {
     if (loading || validation) return;
@@ -84,8 +84,8 @@ function Index() {
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Analysis mode"><Button variant={mode === "single" ? "default" : "outline"} aria-pressed={mode === "single"} disabled={loading} onClick={() => { setMode("single"); setActive("A"); }}><MapPin />Single location</Button><Button variant={mode === "compare" ? "default" : "outline"} aria-pressed={mode === "compare"} disabled={loading} onClick={() => setMode("compare")}><GitCompareArrows />Compare two locations</Button></div>
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <aside className="space-y-5 border-b border-border pb-6 lg:border-b-0 lg:border-r lg:pr-6"><h2 className="text-xl font-semibold">1–3. Configure analysis</h2>
-          <div className="space-y-1.5"><Label htmlFor="variable">Environmental variable</Label><Select value={code} onValueChange={setCode} disabled={loading}><SelectTrigger id="variable"><SelectValue /></SelectTrigger><SelectContent>{PARAMETERS.map(p => <SelectItem key={p.code} value={p.code}>{p.label}</SelectItem>)}</SelectContent></Select></div>
-          <div className="grid grid-cols-2 gap-2"><div className="space-y-1.5"><Label htmlFor="start">Start year</Label><Input id="start" type="number" min={MIN_YEAR} max={MAX_YEAR} disabled={loading} value={startYear} onChange={e => setStartYear(e.target.value)} /></div><div className="space-y-1.5"><Label htmlFor="end">End year</Label><Input id="end" type="number" min={MIN_YEAR} max={MAX_YEAR} disabled={loading} value={endYear} onChange={e => setEndYear(e.target.value)} /></div></div>
+          <div className="space-y-1.5"><Label htmlFor="variable">Environmental variable</Label><Select value={code} onValueChange={v => { setCode(v); if (Number(startYear) < minYearFor(v)) setStartYear(String(minYearFor(v))); }} disabled={loading}><SelectTrigger id="variable"><SelectValue /></SelectTrigger><SelectContent>{PARAMETERS.map(p => <SelectItem key={p.code} value={p.code}>{p.label}</SelectItem>)}</SelectContent></Select></div>
+          <div className="grid grid-cols-2 gap-2"><div className="space-y-1.5"><Label htmlFor="start">Start year</Label><Input id="start" type="number" min={minYearFor(code)} max={MAX_YEAR} disabled={loading} value={startYear} onChange={e => setStartYear(e.target.value)} /></div><div className="space-y-1.5"><Label htmlFor="end">End year</Label><Input id="end" type="number" min={minYearFor(code)} max={MAX_YEAR} disabled={loading} value={endYear} onChange={e => setEndYear(e.target.value)} /></div></div>
           <div className="flex gap-2" role="group" aria-label="Active map target"><Button size="sm" variant={active === "A" ? "default" : "outline"} aria-pressed={active === "A"} disabled={loading} onClick={() => setActive("A")}>Select location A</Button>{mode === "compare" && <Button size="sm" variant={active === "B" ? "default" : "outline"} aria-pressed={active === "B"} disabled={loading} onClick={() => setActive("B")}>Select location B</Button>}</div>
           <LocationPicker id={active} point={active === "A" ? a : b} onChange={active === "A" ? setA : setB} disabled={loading} />
           {validation && <p role="alert" className="text-sm text-destructive">{validation}</p>}
