@@ -1,4 +1,8 @@
 # Worldwide explorer
+## Solar extension
+- [ ] Add validated GHI units, RE requests, solar year limits and isolated cache metadata.
+- [ ] Integrate monthly solar charts, annual totals, A/B comparisons and exports.
+- [ ] Extend forecasting to a fifth nonnegative target and test real NASA solar data.
 ## Forecast extension
 - [x] Implement pinned Python models, chronological backtests, calibrated intervals, and job API.
 - [x] Add Forecast tab, snapshot-safe progress, monthly charts, metrics, tables, and exports.

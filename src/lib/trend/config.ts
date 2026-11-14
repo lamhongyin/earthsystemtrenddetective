@@ -1,6 +1,6 @@
 export type Aggregation = "weighted_mean" | "sum_from_daily_mean";
 export type ParameterDef = {
-  label: string; code: "T2M" | "PRECTOTCORR" | "RH2M" | "WS10M";
+  label: string; code: "T2M" | "PRECTOTCORR" | "RH2M" | "WS10M" | "ALLSKY_SFC_SW_DWN";
   unit: string; annualUnit: string; aggregation: Aggregation; description: string;
 };
 export const PARAMETERS: ParameterDef[] = [
@@ -8,6 +8,7 @@ export const PARAMETERS: ParameterDef[] = [
   { label: "Corrected precipitation", code: "PRECTOTCORR", unit: "mm/day", annualUnit: "mm", aggregation: "sum_from_daily_mean", description: "Estimated annual rainfall total" },
   { label: "Relative humidity (2 m)", code: "RH2M", unit: "%", annualUnit: "%", aggregation: "weighted_mean", description: "Annual average relative humidity" },
   { label: "Wind speed (10 m)", code: "WS10M", unit: "m/s", annualUnit: "m/s", aggregation: "weighted_mean", description: "Annual average wind speed" },
+  { label: "Solar irradiance — GHI", code: "ALLSKY_SFC_SW_DWN", unit: "kWh/m²/day", annualUnit: "kWh/m²/day", aggregation: "weighted_mean", description: "Annual mean daily solar energy on a horizontal surface" },
 ];
 export const PARAMETER_CODES = PARAMETERS.map((p) => p.code);
 export const LOCATIONS = [
@@ -28,12 +29,17 @@ export const CUSTOM_LOCATION = "Custom coordinates";
 export const MIN_YEAR = 1981;
 export const MAX_YEAR = 2025;
 export const POWER_ENDPOINT = "https://power.larc.nasa.gov/api/temporal/monthly/point";
+export const SOLAR_CODE = "ALLSKY_SFC_SW_DWN";
+export const CANONICAL_UNIT_VERSION = "monthly-units-v2-solar";
+export const communityFor = (code: string) => code === SOLAR_CODE ? "RE" : "AG";
+export const minYearFor = (code: string) => code === SOLAR_CODE ? 1984 : MIN_YEAR;
 
 export const normalizeLongitude = (lon: number) => ((lon + 180) % 360 + 360) % 360 - 180;
 
-export function validatePeriod(start: number, end: number): string | null {
-  if (!Number.isInteger(start) || !Number.isInteger(end) || start < MIN_YEAR || end > MAX_YEAR || start > MAX_YEAR || end < MIN_YEAR)
-    return `Years must be whole numbers between ${MIN_YEAR} and ${MAX_YEAR}.`;
+export function validatePeriod(start: number, end: number, code = "T2M"): string | null {
+  const min = minYearFor(code);
+  if (!Number.isInteger(start) || !Number.isInteger(end) || start < min || end > MAX_YEAR || start > MAX_YEAR || end < min)
+    return `Years must be whole numbers between ${min} and ${MAX_YEAR}.`;
   if (!(end > start) || end - start < 7) return "Choose at least eight calendar years (e.g., 2005–2024).";
   return null;
 }
