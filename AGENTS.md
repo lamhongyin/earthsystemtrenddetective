@@ -36,3 +36,6 @@ use the editor.
 - Google Maps renders through an asynchronous browser callback; place search is an explicit authenticated server function with bounded results and no persistent geocoder cache to protect billable access.
 - NASA analysis stays public and uses submitted snapshots, per-location outcomes, and keyed query deduplication; search authentication must not gate analysis.
 - Google-derived place labels are transient display content and are replaced by selected-point labels in exports to avoid distributing provider text.
+- Forecast training lives in a separately hosted pinned Python service under `services/forecast`; TanStack server functions proxy its fixed configured URL with a server-only credential because the app runtime cannot execute Python.
+- Forecasting uses direct lead-specific trees and a seasonal benchmark, expanding origins and disjoint validation/calibration/test target blocks; keep scientific acceptance tests passing and never substitute trend extrapolation when the service is unavailable.
+- Forecast results, charts and exports use immutable submitted monthly snapshots; process independent fits sequentially and ignore or cancel stale jobs to bound work and prevent mislabeled results.
