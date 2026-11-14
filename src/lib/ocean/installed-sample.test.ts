@@ -13,13 +13,28 @@ function useInstalledArchive() {
   vi.stubGlobal("fetch", (url: string) => nativeFetch(`http://localhost:8080${url}`));
 }
 describe("Installed NASA January 2024 chlorophyll sample", () => {
-  it("installs only the documented month, processing version and units without SST", () => {
+  it("installs only the documented month, processing version and units alongside genuine SST", () => {
     expect(source?.metadata.times).toEqual(["2024-01"]);
     expect(source?.metadata.version).toBe("R2022.0.3");
     expect(source?.metadata.unit).toBe("mg/m³");
     expect(source?.metadata.resolution).toBe(1 / 12);
-    expect(installed.sources.sst).toBeUndefined();
+    expect(installed.sources.sst?.metadata.version).toBe("R2019.0");
+    expect(installed.sources.sst?.metadata.times).toEqual(["2024-01"]);
     expect(defaultMonth([source?.metadata].filter(m => m !== undefined), "chlorophyll", "2026-11-14")).toBe("2024-01");
+  });
+  it("retains genuine SST native points, original bounds and quality provenance", async () => {
+    useInstalledArchive();
+    const sst = installed.sources.sst;
+    expect(sst?.metadata.unit).toBe("°C");
+    expect(sst?.provenance["inputSha256"]).toBe("d8d49bf5c558fd74e0c7fafd13cae3fb87474f10735ba481624c0e81ffb58832");
+    expect(sst?.provenance["sourceTimeCoverageStart"]).toBe("2024-01-01T00:10:01.000Z");
+    for (const [lat,lon,value] of [[1.8,104.5,28.244998931884766],[5.05,110.05,27.69999885559082],[2.8,101,29.78999900817871]]) {
+      if (lat === undefined || lon === undefined) throw new Error("Invalid point");
+      const records = await preparedHistory({lat,lon},2024,2024);
+      expect(records.find(r => r.code === "sst")?.months[0]?.value).toBe(value);
+    }
+    if (!sst) throw new Error("Missing SST");
+    for (const spec of [...Object.values(sst.maps),sst.histories]) await expect(verifyAsset(await (await fetch(spec.path)).arrayBuffer(),spec)).resolves.toBeUndefined();
   });
   it("serves unchanged map and history bytes matching supplied SHA-256 entries", async () => {
     useInstalledArchive();
@@ -35,9 +50,9 @@ describe("Installed NASA January 2024 chlorophyll sample", () => {
     for (const [lat, lon, value] of [[1.8,104.5,4.153026580810547], [5.05,110.05,0.14583836495876312], [2.8,101,3.6388227939605713]]) {
       if (lat === undefined || lon === undefined || value === undefined) throw new Error("Invalid fixture");
       const records = await preparedHistory({lat, lon}, 2005, 2024);
-      expect(records.map(r => r.code)).toEqual(["chlorophyll"]);
-      expect(records[0]?.months[0]?.value).toBe(value);
-      expect(seasonalTrend(records[0]?.months ?? [],2005,2024).slope).toBeNull();
+      expect(records.map(r => r.code)).toEqual(["sst", "chlorophyll"]);
+      expect(records.find(r => r.code === "chlorophyll")?.months[0]?.value).toBe(value);
+      expect(seasonalTrend(records.find(r => r.code === "chlorophyll")?.months ?? [],2005,2024).slope).toBeNull();
     }
   });
   it("preserves region area weighting and rejects below-70-percent coverage", async () => {
@@ -49,9 +64,9 @@ describe("Installed NASA January 2024 chlorophyll sample", () => {
     ];
     for (const {value,...target} of regions) {
       const records = await preparedHistory(target,2024,2024);
-      expect(records[0]?.months[0]?.value).toBe(value);
-      expect(records[0]?.cell).toBeNull();
-      if (value === null) expect(records[0]?.months[0]?.coverage).toBe(0.6945004091336706);
+      expect(records.find(r => r.code === "chlorophyll")?.months[0]?.value).toBe(value);
+      expect(records.find(r => r.code === "chlorophyll")?.cell).toBeNull();
+      if (value === null) expect(records.find(r => r.code === "chlorophyll")?.months[0]?.coverage).toBe(0.6945004091336706);
     }
   });
   it("keeps overview measurements distinct from native histories and does not invent arbitrary histories", async () => {
