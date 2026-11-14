@@ -28,7 +28,7 @@ function RainGraph({ title, rows, axis, keys, unit }: { title: string; rows: obj
 export function RainfallPanel({ point }: { point: Point }) {
   const [source, setSource] = useState("POWER"), [type, setType] = useState("compare"), [spatial, setSpatial] = useState("point");
   const [start, setStart] = useState("2005"), [end, setEnd] = useState("2024"), [power, setPower] = useState<RainSeries | null>(null), [imerg, setImerg] = useState<RainSeries | null>(null);
-  const [result, setResult] = useState<{ series: RainSeries[]; comparison: RainComparison | null; start: number; end: number; key: string; lat: number; lon: number } | null>(null);
+  const [result, setResult] = useState<{ series: RainSeries[]; comparison: RainComparison | null; start: number; end: number; spatial: string; key: string; lat: number; lon: number } | null>(null);
   const [busy, setBusy] = useState(false), [error, setError] = useState(""), [access, setAccess] = useState("Automatic IMERG retrieval is not connected. No verified Giovanni reference file is installed."), [checkedAt, setCheckedAt] = useState("");
   const fetchPower = useServerFn(fetchPowerMonthly), checkAccess = useServerFn(checkImergAccess), request = useRef(0);
   const key = JSON.stringify([point.lat, point.lon, source, type, spatial, start, end, power?.sha256, imerg?.sha256]), keyRef = useRef(key); keyRef.current = key;
@@ -57,7 +57,9 @@ export function RainfallPanel({ point }: { point: Point }) {
       }
       const comparison = type === "compare" && p && imerg ? compareRainfall(p, imerg, sy, ey, spatial === "point" ? point : undefined) : null;
       if (id !== request.current || submitted !== keyRef.current) return;
-      setResult({ series: valid.map(s => ({ ...s, rows: s.rows.filter(r => Number(r.month.slice(0, 4)) >= sy && Number(r.month.slice(0, 4)) <= ey) })), comparison, start: sy, end: ey, key: submitted, lat: point.lat, lon: point.lon });
+      const selected = valid.map(s => ({ ...s, rows: s.rows.filter(r => Number(r.month.slice(0, 4)) >= sy && Number(r.month.slice(0, 4)) <= ey) }));
+      if (selected.some(s => !s.rows.some(r => r.valueMm !== null))) throw new Error("The requested period has no valid observations for this source.");
+      setResult({ series: selected, comparison, start: sy, end: ey, spatial, key: submitted, lat: point.lat, lon: point.lon });
     } catch (e) { if (id === request.current && submitted === keyRef.current) setError(e instanceof Error ? e.message : "Rainfall analysis failed."); }
     finally { if (id === request.current) setBusy(false); }
   }

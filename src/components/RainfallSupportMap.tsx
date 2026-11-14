@@ -11,7 +11,8 @@ export default function RainfallSupportMap({ supports }: { supports: { label: st
     supports.forEach(({ label, support }, i) => {
       const b = support.bounds, bounds = L.latLngBounds([b.south, b.west], [b.north, b.east]);
       extent.extend(bounds);
-      L.rectangle(bounds, { color: styles.getPropertyValue(i === 0 ? "--primary" : "--comparison-b").trim(), fillOpacity: 0.04, weight: 2 }).addTo(map).bindTooltip(document.createTextNode(`${label}: ${support.mode === "region" ? "Regional series" : "source-cell footprint"}`));
+      const tooltip = document.createElement("span"); tooltip.textContent = `${label}: ${support.mode === "region" ? "Regional series" : "source-cell footprint"}`;
+      L.rectangle(bounds, { color: styles.getPropertyValue(i === 0 ? "--primary" : "--comparison-b").trim(), fillOpacity: 0.04, weight: 2 }).addTo(map).bindTooltip(tooltip);
     });
     map.fitBounds(extent, { padding: [25, 25], maxZoom: 9 });
     return () => { map.remove(); };
