@@ -10,7 +10,7 @@ from typing import Literal
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
-from engine import VERSION, forecast, month_index
+from engine import VERSION, forecast
 
 class Observation(BaseModel):
     month: str = Field(pattern=r"^\d{4}-(0[1-9]|1[0-2])$")
@@ -76,6 +76,10 @@ def process(job_id, request):
         if not isinstance(e, ValueError):
             import traceback
             traceback.print_exc()
+    finally:
+        with lock:
+            if job_id in jobs:
+                jobs[job_id]["finished"] = True
 
 @app.post("/jobs", dependencies=[Depends(authorize)])
 def create_job(request: Request):
@@ -83,16 +87,16 @@ def create_job(request: Request):
     key = hashlib.sha256((VERSION + json.dumps(data, sort_keys=True, allow_nan=False)).encode()).hexdigest()
     with lock:
         now = time.time()
-        expired = [i for i, j in jobs.items() if j["status"] not in ("queued", "running") and now - j["created"] > TTL]
+        expired = [i for i, j in jobs.items() if j.get("finished") and now - j["created"] > TTL]
         for i in expired:
             del jobs[i]
         for i, j in jobs.items():
             if j["key"] == key and j["status"] in ("queued", "running", "completed"):
-                return {"id": i, "status": j["status"]}
-        if sum(j["status"] in ("queued", "running") for j in jobs.values()) >= MAX_ACTIVE:
+                return {"id": i, "status": j["status"], **({"result": j["result"]} if j["status"] == "completed" else {})}
+        if sum(not j.get("finished") for j in jobs.values()) >= MAX_ACTIVE:
             raise HTTPException(429, "Forecast queue is full. Try again after current work finishes.")
         if len(jobs) >= MAX_JOBS:
-            old = next((i for i, j in jobs.items() if j["status"] not in ("queued", "running")), None)
+            old = next((i for i, j in jobs.items() if j.get("finished")), None)
             if old:
                 del jobs[old]
         job_id = secrets.token_urlsafe(24)

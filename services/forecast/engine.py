@@ -135,7 +135,6 @@ def forecast(request, progress=lambda s: None):
                 base = postprocess(base_raw, parameter)
                 tree_raw = fit_predict(y, indices, origin, lead, matrices) if name == "validation" or selected == "gradient_boosted" else None
                 tree = postprocess(tree_raw, parameter) if tree_raw is not None else None
-                raw = tree_raw if selected == "gradient_boosted" else base_raw
                 prediction = tree if selected == "gradient_boosted" else base
                 clipped[name] += int(base != base_raw) + int(tree_raw is not None and tree != tree_raw)
                 r = {"origin": month_string(indices[origin]), "target": month_string(indices[origin] + lead),
