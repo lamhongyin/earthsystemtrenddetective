@@ -16,11 +16,20 @@ export const LOCATIONS = [
   { label: "Kuala Lumpur", lat: 3.139, lon: 101.6869 },
   { label: "Kuching, Sarawak", lat: 1.5533, lon: 110.3592 },
   { label: "Kota Kinabalu, Sabah", lat: 5.9804, lon: 116.0735 },
+  { label: "London, United Kingdom", lat: 51.5074, lon: -0.1278 },
+  { label: "Cairo, Egypt", lat: 30.0444, lon: 31.2357 },
+  { label: "Nairobi, Kenya", lat: -1.2921, lon: 36.8219 },
+  { label: "New York City, United States", lat: 40.7128, lon: -74.0060 },
+  { label: "São Paulo, Brazil", lat: -23.5505, lon: -46.6333 },
+  { label: "Sydney, Australia", lat: -33.8688, lon: 151.2093 },
+  { label: "Tokyo, Japan", lat: 35.6762, lon: 139.6503 },
 ] as const;
 export const CUSTOM_LOCATION = "Custom coordinates";
 export const MIN_YEAR = 1981;
 export const MAX_YEAR = 2025;
 export const POWER_ENDPOINT = "https://power.larc.nasa.gov/api/temporal/monthly/point";
+
+export const normalizeLongitude = (lon: number) => ((lon + 180) % 360 + 360) % 360 - 180;
 
 export function validatePeriod(start: number, end: number): string | null {
   if (!Number.isInteger(start) || !Number.isInteger(end) || start < MIN_YEAR || end > MAX_YEAR || start > MAX_YEAR || end < MIN_YEAR)
