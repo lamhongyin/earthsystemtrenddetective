@@ -11,6 +11,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
 from engine import VERSION, forecast
+from air_quality import extract
 
 class Observation(BaseModel):
     month: str = Field(pattern=r"^\d{4}-(0[1-9]|1[0-2])$")
@@ -61,7 +62,26 @@ def authorize(authorization: str = Header(default="")):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "version": VERSION}
+    return {"status": "ok", "version": VERSION, "airQuality": "geos-cf-v2"}
+
+class AirPoint(BaseModel):
+    latitude: float = Field(ge=-90, le=90, allow_inf_nan=False)
+    longitude: float = Field(ge=-180, le=180, allow_inf_nan=False)
+
+class AirRequest(BaseModel):
+    points: list[AirPoint] = Field(min_length=1, max_length=2)
+    horizon: Literal[24, 72, 120]
+
+@app.post("/air-quality", dependencies=[Depends(authorize)])
+def air_quality(request: AirRequest):
+    try:
+        return {"results": extract([p.model_dump() for p in request.points], request.horizon)}
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from e
+    except Exception as e:
+        import logging
+        logging.exception("NASA GEOS-CF extraction failed")
+        raise HTTPException(503, "NASA GEOS-CF data could not be retrieved; no substitute data returned.") from e
 
 def process(job_id, request):
     def update(stage):

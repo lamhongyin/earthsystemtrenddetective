@@ -1,4 +1,9 @@
 # Worldwide explorer
+## Air Quality extension
+- [ ] Add verified public GEOS-CF point adapter and strict versioned PM2.5 AQI calculations.
+- [ ] Add shared-location Air Quality views, comparisons, metadata and exports.
+- [ ] Test actual NASA point extraction, scientific safeguards and desktop/mobile states.
+- [ ] Deploy/connect the Python adapter (requires the user's HTTPS hosting address).
 ## Solar extension
 - [x] Add validated GHI units, RE requests, solar year limits and isolated cache metadata.
 - [x] Integrate monthly solar charts, annual totals, A/B comparisons and exports.
