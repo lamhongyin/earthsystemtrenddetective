@@ -21,6 +21,8 @@ export function ForecastPanel({ a, b, compare, code }: { a: Point; b: Point; com
   const [horizon, setHorizon] = useState("12"), [level, setLevel] = useState("0.95"), [model, setModel] = useState<ForecastModel>("auto");
   const [loading, setLoading] = useState(false), [progress, setProgress] = useState(""), [error, setError] = useState("");
   const [results, setResults] = useState<PanelResult[]>([]), [submitted, setSubmitted] = useState("");
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [connectionChecked, setConnectionChecked] = useState(false);
   const runId = useRef(0), jobId = useRef<string | null>(null), mounted = useRef(true);
   const power = useServerFn(fetchPowerMonthly), serviceFn = useServerFn(forecastService), qc = useQueryClient();
   async function service(input: Parameters<typeof serviceFn>[0]): Promise<{ ok: true; job: ForecastJob } | { ok: false; error: string }> {
@@ -30,6 +32,7 @@ export function ForecastPanel({ a, b, compare, code }: { a: Point; b: Point; com
   const key = JSON.stringify({ a, b: compare ? b : null, target, variable, start, end, horizon, level, model });
   const draftKey = useRef(key); draftKey.current = key;
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; runId.current++; }; }, []);
+  useEffect(() => { let active = true; service({ data: { action: "check" } }).then(r => { if (active) { setConnectionError(r.ok ? null : r.error); setConnectionChecked(true); } }).catch(() => { if (active) { setConnectionError("Forecast service connection could not be checked. Historical analysis remains available."); setConnectionChecked(true); } }); return () => { active = false; }; }, []);
   const targetIds = compare && target === "both" ? ["A", "B"] : [compare ? target : "A"];
   const minYear = variable === "all" ? 1984 : minYearFor(variable);
   const validation = !/^\d{4}-(0[1-9]|1[0-2])$/.test(start) || !/^\d{4}-(0[1-9]|1[0-2])$/.test(end) || start > end || Number(start.slice(0, 4)) < minYear || Number(end.slice(0, 4)) > 2025 ? `Choose an ordered monthly training period between ${minYear} and 2025.` : !Number.isInteger(Number(horizon)) || Number(horizon) < 1 || Number(horizon) > 24 ? "Forecast horizon must be a whole number from 1 to 24 months." : targetIds.map(id => validateCoords((id === "B" ? b : a).lat, (id === "B" ? b : a).lon)).find(Boolean);
@@ -110,7 +113,8 @@ export function ForecastPanel({ a, b, compare, code }: { a: Point; b: Point; com
       <div className="space-y-1.5"><Label htmlFor="forecast-horizon">Forecast horizon (months)</Label><Input id="forecast-horizon" type="number" min={1} max={24} value={horizon} disabled={loading} onChange={e => setHorizon(e.target.value)} /><div className="flex gap-2 pt-1">{[3, 6, 12, 24].map(h => <Button key={h} size="sm" variant={horizon === String(h) ? "default" : "outline"} disabled={loading} onClick={() => setHorizon(String(h))}>{h}</Button>)}</div></div>
       {select("Prediction interval level", level, setLevel, [["0.8", "80%"], ["0.9", "90%"], ["0.95", "95%"]])}{select("Forecast model", model, v => setModel(v as ForecastModel), [["auto", "Auto-select by validation MAE"], ["seasonal_naive", "Seasonal naive benchmark (not ML)"], ["gradient_boosted", "Gradient-boosted trees"]])}
     </div>{validation && <p role="alert" className="text-sm text-destructive">{validation}</p>}
-    <div className="flex flex-wrap gap-2"><Button disabled={!!validation || loading} onClick={run}>{loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}Train, evaluate and forecast</Button>{loading && <Button variant="outline" onClick={cancel}><Square className="size-4" />Stop</Button>}</div>
+    {connectionError && <p role="alert" className="border-l-4 border-notice-foreground pl-3 text-sm">{connectionError}</p>}
+    <div className="flex flex-wrap gap-2"><Button disabled={!!validation || loading || !connectionChecked || !!connectionError} onClick={run}>{loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}Train, evaluate and forecast</Button>{loading && <Button variant="outline" onClick={cancel}><Square className="size-4" />Stop</Button>}</div>
     {progress && <p role="status" className="text-sm text-muted-foreground">{progress}</p>}{error && <p role="alert" className="border-l-4 border-destructive pl-3 text-sm text-destructive">{error}</p>}
     {results.length > 0 && submitted !== key && <p className="bg-notice p-3 text-sm text-notice-foreground">Settings changed. These results retain the submitted training period and locations.</p>}
     {results.map(r => r.result ? <ForecastResults key={r.key} result={r.result} label={r.label} exportLabel={r.exportLabel} /> : <div key={r.key} role="alert" className="border-l-4 border-destructive pl-3 text-sm"><strong>{r.label}</strong><p>{r.error}</p></div>)}
