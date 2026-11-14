@@ -1,4 +1,11 @@
 # Worldwide explorer
+## Global Spatial Map
+- [x] Stage 1: verify NASA temperature slices, worldwide rendering, same-slice samples, history and A/B integration.
+- [x] Stage 2: prepare and independently verify a native-resolution temperature Sen slope product.
+- [x] Stage 3: verify and enable additional environmental variables individually.
+- [x] Stage 4: verify period averages, annual-frame animation and feasible grid outlines.
+- [x] Validate real-data desktop/mobile preview; leave production unchanged.
+- Limits: trend/average periods are fixed to 2005–2024; annual/monthly snapshots have verified coverage through 2025. Annual completeness inherits NASA source aggregation; no significance map. NASA outages can prevent a new frame; the old period stays labelled. Mobile world view shows a narrower extent; reset, zoom and pan remain available. Spatial verification details are in SPATIAL_VERIFICATION.md.
 ## Air Quality extension
 - [x] Add verified public GEOS-CF point adapter and strict versioned PM2.5 AQI calculations.
 - [x] Add shared-location Air Quality views, comparisons, metadata and exports.

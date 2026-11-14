@@ -1,0 +1,232 @@
+{
+  "code": "ALLSKY_SFC_SW_DWN",
+  "variable": "ALLSKY_SFC_SW_DWN",
+  "source": "https://gis.earthdata.nasa.gov/portal/rest/services/POWER/POWER_ANNUAL_RADIATION_LST/ImageServer",
+  "sourceUnit": "W m-2",
+  "conversion": "Mean W/m² × 24 / 1000 = mean daily kWh/m²",
+  "nativeResolution": "1° latitude × 1° longitude (CERES SYN1deg)",
+  "displayResolution": "1° longitude × 1° latitude",
+  "width": 360,
+  "height": 180,
+  "west": -180,
+  "north": 90,
+  "dx": 1,
+  "dy": 1,
+  "years": [
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "retrievedAt": "2026-11-14T14:08:34.889Z",
+  "annualAggregation": "time: mean-weighted",
+  "completeness": "20 of 20 finite annual source values; source annual completeness inherits NASA aggregation",
+  "estimator": "Median pairwise slope against actual calendar years × 10 (Sen slope per decade)",
+  "averageMethod": "Arithmetic mean of the 20 canonical annual values, equal weight per year",
+  "significance": "Not tested; little change is |slope| ≤ 0.1 °C/decade for temperature, not a significance claim",
+  "binary": "Little-endian float32, north-to-south rows; NaN is missing; counts uint8",
+  "identities": [
+    {
+      "year": 2005,
+      "time": 1135987200000,
+      "sha256": "2690922a465592bf3df1537d0ca79f611929fb436f49c941315ee9cc1975b093"
+    },
+    {
+      "year": 2006,
+      "time": 1167523200000,
+      "sha256": "6854bc37e0dcc4fc534d0ccd9a7f2a0ef6b1d620a1e3356c5df4606c15910d79"
+    },
+    {
+      "year": 2007,
+      "time": 1199059200000,
+      "sha256": "f6552b98d8a4cb70174aa5a8192bd86c89e2a04e12381415a9e99708474d39cc"
+    },
+    {
+      "year": 2008,
+      "time": 1230681600000,
+      "sha256": "1dfcc8173d2415d0f705115a718a075a9c23965761db0b0132c335662e56151c"
+    },
+    {
+      "year": 2009,
+      "time": 1262217600000,
+      "sha256": "e0af370987165b831ab10a57c709cee849752dc21fb5616ab7c924b0469b465e"
+    },
+    {
+      "year": 2010,
+      "time": 1293753600000,
+      "sha256": "7e16b4b93b7fbe7d946919ba6fae65fb3ae488b046948a260af3b2ce2098ba00"
+    },
+    {
+      "year": 2011,
+      "time": 1325289600000,
+      "sha256": "4cdf6698cd0565d3d1e76e8dba4d3f2d2fba41597241fd40b04b4f293947efc4"
+    },
+    {
+      "year": 2012,
+      "time": 1356912000000,
+      "sha256": "2630423f17dfc9eaeb5b9ab4062077c3aa5eeae9b47dfa6aba6c59f6f65df719"
+    },
+    {
+      "year": 2013,
+      "time": 1388448000000,
+      "sha256": "b9b04558e941830f6165b37150d24a6eab83e40f56a0ade92f6185b7ff8c78a3"
+    },
+    {
+      "year": 2014,
+      "time": 1419984000000,
+      "sha256": "f2d688d11222d733696cd9bd413413be4e4b4dea4542a6930eb06a2da37dc3a8"
+    },
+    {
+      "year": 2015,
+      "time": 1451520000000,
+      "sha256": "85c2f99ce0e590d4c7c5870ae68ea55500794fc7fda417b617f22580a3fdb9ed"
+    },
+    {
+      "year": 2016,
+      "time": 1483142400000,
+      "sha256": "41c921405067f6a12ce473b4a7d0f7abfb147b3310f5d46d3cc4504e16617659"
+    },
+    {
+      "year": 2017,
+      "time": 1514678400000,
+      "sha256": "565ed715185423f1e26b8e930e5b9dc69230c6dcae436e1c16be92135b328659"
+    },
+    {
+      "year": 2018,
+      "time": 1546214400000,
+      "sha256": "21cb5a25cf2e5f3cc9c5506172a66b55e73ee6b52a9de4c02df78c310c505eea"
+    },
+    {
+      "year": 2019,
+      "time": 1577750400000,
+      "sha256": "2a7a5a44669acfd028178a6b4154773a0743ece3b125985e77db97ccc4e5ca31"
+    },
+    {
+      "year": 2020,
+      "time": 1609372800000,
+      "sha256": "b8307af588f469d0f7cd6afa09713aaf29287bbd867a78240ed8042969545205"
+    },
+    {
+      "year": 2021,
+      "time": 1640908800000,
+      "sha256": "9545f2f14b38040a8232c56e1d759986738aeea3aba75d895fd8683bdc646e1d"
+    },
+    {
+      "year": 2022,
+      "time": 1672444800000,
+      "sha256": "4223cc39d617d569bd0b5bd8dec4ab136647b399199cd9591fae82dd8eccb17b"
+    },
+    {
+      "year": 2023,
+      "time": 1703980800000,
+      "sha256": "4c9be6a4159d2a444033ba4c91779a64b537ba9d678524ee444d1908a0445fce"
+    },
+    {
+      "year": 2024,
+      "time": 1735603200000,
+      "sha256": "b694f5adaf6137d6b570c8f9f2e55b7008dc15b07b3e08a5cc003b35a768cd36"
+    }
+  ],
+  "checks": [
+    {
+      "lat": 1.5,
+      "lon": 103.75,
+      "values": [
+        4.619999408721924,
+        4.415999412536621,
+        4.427999496459961,
+        4.4639997482299805,
+        4.607999801635742,
+        4.6439995765686035,
+        4.535999774932861,
+        4.571999549865723,
+        4.607999801635742,
+        4.727999687194824,
+        4.6439995765686035,
+        4.679999828338623,
+        4.499999523162842,
+        4.571999549865723,
+        4.787999629974365,
+        4.631999492645264,
+        4.631999492645264,
+        4.499999523162842,
+        4.511999607086182,
+        4.499999523162842
+      ],
+      "slopePerDecade": 0.027856869623064995,
+      "count": 20
+    },
+    {
+      "lat": 51.5,
+      "lon": -0.125,
+      "values": [
+        2.879999876022339,
+        3.0119998455047607,
+        2.92799973487854,
+        2.873999834060669,
+        3.0119998455047607,
+        2.9519999027252197,
+        2.9699997901916504,
+        2.801999807357788,
+        2.8979997634887695,
+        2.98799991607666,
+        2.9819998741149902,
+        2.94599986076355,
+        2.921999931335449,
+        3.0839996337890625,
+        2.999999761581421,
+        3.1559996604919434,
+        2.8979997634887695,
+        3.167999744415283,
+        2.999999761581421,
+        2.885999917984009
+      ],
+      "slopePerDecade": 0.05066651850938797,
+      "count": 20
+    },
+    {
+      "lat": -33.875,
+      "lon": 151.25,
+      "values": [
+        4.787999629974365,
+        4.571999549865723,
+        4.715999603271484,
+        4.535999774932861,
+        4.655999660491943,
+        4.451999664306641,
+        4.36799955368042,
+        4.571999549865723,
+        4.799999713897705,
+        4.655999660491943,
+        4.607999801635742,
+        4.811999797821045,
+        4.7039995193481445,
+        4.799999713897705,
+        4.919999599456787,
+        4.439999580383301,
+        4.559999465942383,
+        4.487999439239502,
+        4.871999740600586,
+        4.5239996910095215
+      ],
+      "slopePerDecade": 0.01673070341348648,
+      "count": 20
+    }
+  ]
+}

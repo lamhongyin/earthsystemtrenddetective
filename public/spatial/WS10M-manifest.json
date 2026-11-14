@@ -1,0 +1,232 @@
+{
+  "code": "WS10M",
+  "variable": "WS10M",
+  "source": "https://gis.earthdata.nasa.gov/portal/rest/services/POWER/POWER_ANNUAL_METEOROLOGY_LST/ImageServer",
+  "sourceUnit": "m/s",
+  "conversion": "Metres per second; no conversion",
+  "nativeResolution": "0.5° latitude × 0.625° longitude (MERRA-2)",
+  "displayResolution": "0.625° longitude × 0.5° latitude",
+  "width": 576,
+  "height": 361,
+  "west": -180.3125,
+  "north": 90.25,
+  "dx": 0.625,
+  "dy": 0.5,
+  "years": [
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "retrievedAt": "2026-11-14T14:08:32.179Z",
+  "annualAggregation": "time: mean-weighted",
+  "completeness": "20 of 20 finite annual source values; source annual completeness inherits NASA aggregation",
+  "estimator": "Median pairwise slope against actual calendar years × 10 (Sen slope per decade)",
+  "averageMethod": "Arithmetic mean of the 20 canonical annual values, equal weight per year",
+  "significance": "Not tested; little change is |slope| ≤ 0.1 °C/decade for temperature, not a significance claim",
+  "binary": "Little-endian float32, north-to-south rows; NaN is missing; counts uint8",
+  "identities": [
+    {
+      "year": 2005,
+      "time": 1135987200000,
+      "sha256": "0e5a0c1c9064c0674ed150c91851d6b344421727d1759fb088cdfee95b3f468a"
+    },
+    {
+      "year": 2006,
+      "time": 1167523200000,
+      "sha256": "e3b2a2c17f91d7fa00fd2e56de6565349cf709525e82fffc15b9a7f2bbe0cd77"
+    },
+    {
+      "year": 2007,
+      "time": 1199059200000,
+      "sha256": "352ff137f32fb62aec6d4bad6ecbf0aad09c3e4fb8007a92c191c0e7bbcf4965"
+    },
+    {
+      "year": 2008,
+      "time": 1230681600000,
+      "sha256": "0510d65fe9f95797c9523f265ad2404006b9df13f48c5b4a784e2f89977a7ad0"
+    },
+    {
+      "year": 2009,
+      "time": 1262217600000,
+      "sha256": "14c768e64e531375c2124624b870ac6b268278af533a6673411c3e93fcbd9630"
+    },
+    {
+      "year": 2010,
+      "time": 1293753600000,
+      "sha256": "c1517337495cc1380df91dc05fdfcd57ad2022d955672807dba09bf54f64d214"
+    },
+    {
+      "year": 2011,
+      "time": 1325289600000,
+      "sha256": "8fae174dfbb56b8e0ff9577e21f74ea6ee9cec17e35c7af8df9b59f075953035"
+    },
+    {
+      "year": 2012,
+      "time": 1356912000000,
+      "sha256": "3d62234a5d3c7f94f8efb06d45c074398d90b1d88a517005cc9932a9921aab42"
+    },
+    {
+      "year": 2013,
+      "time": 1388448000000,
+      "sha256": "471a5e237ea11354adfcafe2eae741547ee3ceaa4f9dce9835b67ec4b2b9d765"
+    },
+    {
+      "year": 2014,
+      "time": 1419984000000,
+      "sha256": "e5b9e79b8887ccb0b678d63bfb82ea4a3a6d4d8230d4f338e6d094ee2d09d754"
+    },
+    {
+      "year": 2015,
+      "time": 1451520000000,
+      "sha256": "ec3b1e4076cf5dbe0ca15a9bd9d64d2940666c163baf36bedf9758dadd1133f2"
+    },
+    {
+      "year": 2016,
+      "time": 1483142400000,
+      "sha256": "4eed690213cd9516363e940c0a7544c09135b2822703f517b947f458a62a91c5"
+    },
+    {
+      "year": 2017,
+      "time": 1514678400000,
+      "sha256": "d8abcc94c10b81b03c97eb9f9e6102fc9be1f3468ce3e133dca0f16d91176128"
+    },
+    {
+      "year": 2018,
+      "time": 1546214400000,
+      "sha256": "792e78fe45130593649ac8527a3b37c09d1373f5b0a0496d28dce005ceb62b4e"
+    },
+    {
+      "year": 2019,
+      "time": 1577750400000,
+      "sha256": "87876b852b76d915d1470e1b9bda131adf0aacf393d20b9b23c9a2cb747ac872"
+    },
+    {
+      "year": 2020,
+      "time": 1609372800000,
+      "sha256": "a60624d84cb94f587320e084e85d10640d8787c47b821752b2ad70bc210e72ab"
+    },
+    {
+      "year": 2021,
+      "time": 1640908800000,
+      "sha256": "93af385f456c678f04825ed056fce13fb399ca7310bb50975937bc92ef2245bf"
+    },
+    {
+      "year": 2022,
+      "time": 1672444800000,
+      "sha256": "b61885ae3ea2acdecb1a741cc4ddd2b7d96af10b465b3676ad724f4346b93f5f"
+    },
+    {
+      "year": 2023,
+      "time": 1703980800000,
+      "sha256": "fc5210bab7fa6923c0d27685bbfda56edc57951e1fb37a7b0f36f0b9beaf170d"
+    },
+    {
+      "year": 2024,
+      "time": 1735603200000,
+      "sha256": "3f1fdbd89ea4e4eb4f20552c7e3c4142d1cff9febc748f706ae0a78553152453"
+    }
+  ],
+  "checks": [
+    {
+      "lat": 1.5,
+      "lon": 103.75,
+      "values": [
+        2.875,
+        2.9375,
+        2.75,
+        2.84375,
+        2.7734375,
+        2.515625,
+        2.828125,
+        2.4765625,
+        2.5546875,
+        2.796875,
+        2.828125,
+        2.75,
+        2.6875,
+        2.7265625,
+        2.9765625,
+        2.9375,
+        2.84375,
+        2.5625,
+        2.84375,
+        2.875
+      ],
+      "slopePerDecade": 0.014322916977107525,
+      "count": 20
+    },
+    {
+      "lat": 51.5,
+      "lon": -0.125,
+      "values": [
+        4.90625,
+        5.078125,
+        5.125,
+        5.328125,
+        4.90625,
+        4.65625,
+        5.125,
+        4.96875,
+        5.03125,
+        4.9375,
+        5.390625,
+        4.90625,
+        5.015625,
+        4.859375,
+        4.96875,
+        5.4375,
+        4.828125,
+        4.890625,
+        5.15625,
+        4.96875
+      ],
+      "slopePerDecade": -0.01903044804930687,
+      "count": 20
+    },
+    {
+      "lat": -33.875,
+      "lon": 151.25,
+      "values": [
+        4.15625,
+        4.25,
+        4.125,
+        4.15625,
+        4.1875,
+        4.0625,
+        4.1875,
+        4.078125,
+        4.125,
+        4.078125,
+        4.09375,
+        4.09375,
+        4.171875,
+        4.203125,
+        3.984375,
+        4.09375,
+        4.15625,
+        4.34375,
+        3.9375,
+        4.046875
+      ],
+      "slopePerDecade": -0.0431547611951828,
+      "count": 20
+    }
+  ]
+}
