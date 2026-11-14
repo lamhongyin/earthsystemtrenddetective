@@ -50,3 +50,6 @@ use the editor.
 - Spatial and historical views share A/B point state; rainfall annual maps retain accumulated totals while monthly maps divide totals by calendar duration, to avoid confusing rates with totals.
 - Hotspot screening runs in a cancellable browser worker over hash-verified annual NASA arrays; keep OLS screening separate from Sen-slope spatial products and retain exact annual evidence for every selected cell.
 - Hotspot thresholds use one jointly eligible population, true-cell spherical area weights and inverse-CDF quantiles; four-edge grouping wraps longitude while missing gaps remain disconnected, to preserve reproducible relative rankings.
+
+- Ocean sources stay in a separate bounded ERDDAP adapter using approved NASA-origin datasets and NOAA monthly MUR derivatives; no Python hosting dependency or POWER ocean aliases, to preserve product meaning and independent availability.
+- Ocean region means use a fixed open-sea mask and clipped spherical area with explicit coverage; month-effect descriptive slopes never imply significance or fish occurrence, to preserve scientific interpretation.
