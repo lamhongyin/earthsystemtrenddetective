@@ -1,6 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Download, Loader2, Maximize, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { OCEAN_SOURCES, OCEAN_VERSION, OceanRequestGate, commonMonth, seasonalTrend, type OceanBounds, type OceanCode, type OceanMetadata, type OceanRecord, type OceanTarget } from "@/lib/ocean/data";
 import { fetchOceanHistory, fetchOceanImage, fetchOceanMetadata } from "@/lib/ocean/service.functions";
+import { fetchOceanPoint } from "@/lib/ocean/service.functions";
+import { defaultMonth } from "@/lib/ocean/archive";
 import { csvRows, downloadCsv, downloadJson, signed } from "@/lib/trend/csv";
 import type { Point } from "@/lib/trend/comparison";
 const OceanMap = lazy(() => import("@/components/OceanMap"));
@@ -18,17 +19,18 @@ type Run = { key: string; a: OceanRecord[]; b: OceanRecord[] | null; start: numb
 const centre = (b: OceanBounds) => ({ lat: (b.south + b.north) / 2, lon: (b.west + b.east) / 2 });
 const fmt = (v: number | null | undefined, code: OceanCode) => v === null || v === undefined ? "Missing" : v.toFixed(code === "sst" ? 3 : 4);
 export function FisheriesPanel({ onUse }: { onUse: (id: "A" | "B", point: Point) => void }) {
-  const metaFn = useServerFn(fetchOceanMetadata), historyFn = useServerFn(fetchOceanHistory), imageFn = useServerFn(fetchOceanImage);
+  const metaFn = fetchOceanMetadata, historyFn = fetchOceanHistory, imageFn = fetchOceanImage;
   const [meta, setMeta] = useState<OceanMetadata[] | null>(null), [code, setCode] = useState<OceanCode>("sst"), [month, setMonth] = useState("");
-  const [layer, setLayer] = useState<Layer | null>(null), [opacity, setOpacity] = useState(75), [view, setView] = useState(0), [error, setError] = useState<string | null>(null), [busy, setBusy] = useState(false), [retry, setRetry] = useState(0);
+  const [layer, setLayer] = useState<Layer | null>(null), [opacity, setOpacity] = useState(75), [view, setView] = useState(1), [error, setError] = useState<string | null>(null), [busy, setBusy] = useState(false), [retry, setRetry] = useState(0);
+  const [metaError, setMetaError] = useState<string | null>(null), [imageError, setImageError] = useState<string | null>(null), [imageBusy, setImageBusy] = useState(false), [imageRetry, setImageRetry] = useState(0), [updated, setUpdated] = useState("");
   const [a, setA] = useState<OceanTarget>({ lat: 1.8, lon: 104.5 }), [b, setB] = useState<OceanTarget | null>({ lat: 5.05, lon: 110.05 }), [active, setActive] = useState<"A" | "B">("A");
   const [start, setStart] = useState("2005"), [end, setEnd] = useState("2024"), [run, setRun] = useState<Run | null>(null), [drawing, setDrawing] = useState(false), [selected, setSelected] = useState<{ lat: number; lon: number; records?: OceanRecord[]; error?: string } | null>(null);
   const imageGate = useRef(new OceanRequestGate()), historyGate = useRef(new OceanRequestGate()), pointGate = useRef(new OceanRequestGate());
   const latestCommon = meta && meta[0] && meta[1] ? commonMonth(meta[0].times, meta[1].times, new Date().toISOString()) : null;
   const months = useMemo(() => { const m = meta?.find(x => x.id === OCEAN_SOURCES[code].id); return m ? [...m.times].reverse().map(t => t.slice(0, 7)) : []; }, [meta, code]);
   const key = JSON.stringify({ a, b, start, end }), stale = !!run && run.key !== key;
-  useEffect(() => { let alive = true; void metaFn().then(r => { if (!alive) return; if (r.ok) { setMeta(r.sources); setMonth(m => m || commonMonth(r.sources[0]?.times ?? [], r.sources[1]?.times ?? [], new Date().toISOString()) || ""); } else setError(r.error); }).catch(() => setError("Ocean metadata could not be reached. Retry later.")); return () => { alive = false; }; }, [metaFn, retry]);
-  useEffect(() => { if (!month) return; const id = imageGate.current.next(); setBusy(true); setError(null); void imageFn({ data: { code, month } }).then(r => { if (!imageGate.current.current(id)) return; if (r.ok) setLayer(r.layer); else { setLayer(null); setError(r.error); } }).catch(() => { if (imageGate.current.current(id)) setError("Ocean image could not be reached. Retry later."); }).finally(() => { if (imageGate.current.current(id)) setBusy(false); }); return () => { imageGate.current.cancel(); }; }, [code, month, imageFn, retry]);
+  useEffect(() => { let alive = true; setMetaError(null); void metaFn().then(r => { if (!alive) return; if (r.ok) { setMeta(r.sources); setUpdated(r.createdAt); setMonth(m => m || defaultMonth(r.sources, "sst", new Date().toISOString()) || defaultMonth(r.sources, "chlorophyll", new Date().toISOString())); if (!r.sources.length) setMetaError("No prepared NASA dataset is installed yet."); } else setMetaError(r.error); }).catch(() => { if (alive) setMetaError("Prepared dates could not be loaded."); }); return () => { alive = false; }; }, [metaFn, retry]);
+  useEffect(() => { if (!month || !months.includes(month)) { setLayer(null); return; } const id = imageGate.current.next(); setImageBusy(true); setImageError(null); setLayer(null); void imageFn({ data: { code, month } }).then(r => { if (!imageGate.current.current(id)) return; if (r.ok) setLayer(r.layer); else setImageError(r.error); }).catch(() => { if (imageGate.current.current(id)) setImageError("Prepared image could not be loaded."); }).finally(() => { if (imageGate.current.current(id)) setImageBusy(false); }); return () => { imageGate.current.cancel(); }; }, [code, month, imageFn, imageRetry, months]);
   useEffect(() => () => { imageGate.current.cancel(); historyGate.current.cancel(); pointGate.current.cancel(); }, []);
   async function analyse() {
     const id = historyGate.current.next(), s = Number(start), e = Number(end); setBusy(true); setError(null);
@@ -38,12 +40,12 @@ export function FisheriesPanel({ onUse }: { onUse: (id: "A" | "B", point: Point)
   }
   async function pick(lat: number, lon: number) {
     if (drawing) return; const id = pointGate.current.next(); setSelected({ lat, lon });
-    try { const y = Number(month.slice(0, 4)); const r = await historyFn({ data: { target: { lat, lon }, start: y, end: y } }); if (pointGate.current.current(id)) setSelected(r.ok ? { lat, lon, records: r.records } : { lat, lon, error: r.error }); }
-    catch { if (pointGate.current.current(id)) setSelected({ lat, lon, error: "NOAA could not return this cell." }); }
+    try { const r = await fetchOceanPoint(code, month, lat, lon); if (pointGate.current.current(id)) setSelected(r.ok ? { lat, lon, records: r.records } : { lat, lon, error: r.error }); }
+    catch { if (pointGate.current.current(id)) setSelected({ lat, lon, error: "Prepared values could not be loaded." }); }
   }
   const rectangle = useCallback((bounds: OceanBounds) => { setDrawing(false); const t = { ...centre(bounds), bounds }; if (active === "A") setA(t); else setB(t); }, [active]);
   const selectedRecord = selected?.records?.find(r => r.code === code), selectedMonth = selectedRecord?.months.find(m => m.month === month);
-  const chart = (c: OceanCode) => run ? run.a.find(r => r.code === c)?.months.map((m, i) => ({ month: m.month, A: m.value, B: run.b?.find(r => r.code === c)?.months[i]?.value ?? null })) ?? [] : [];
+  const chart = (c: OceanCode) => run ? run.a.find(r => r.code === c)?.months.map(m => ({ month: m.month, A: m.value, B: run.b?.find(r => r.code === c)?.months.find(b => b.month === m.month)?.value ?? null })) ?? [] : [];
   const trend = (records: OceanRecord[] | null | undefined, c: OceanCode) => { const r = records?.find(x => x.code === c); return r && run ? seasonalTrend(r.months, run.start, run.end) : null; };
   function usePoint(id: "A" | "B") { if (!selected) return; const t = { lat: selected.lat, lon: selected.lon }; if (id === "A") setA(t); else setB(t); setActive(id); onUse(id, { ...t, label: `Ocean point (${t.lat.toFixed(4)}, ${t.lon.toFixed(4)})`, origin: "coordinates" }); }
   function exportCsv() { if (!run) return; downloadCsv("fisheries-environment-history.csv", csvRows([["location", "latitude", "longitude", "south", "north", "west", "east", "dataset", "distributor", "variable", "original_unit", "display_unit", "month", "value", "valid_area_fraction", "valid_cells", "eligible_cells", "processing_version", "calculation_version", "trend_per_decade", "trend_method"], ...(["A", "B"] as const).flatMap(id => (id === "A" ? run.a : run.b ?? []).flatMap(r => { const t = seasonalTrend(r.months, run.start, run.end); return r.months.map(m => [id, r.target.lat, r.target.lon, r.target.bounds?.south ?? null, r.target.bounds?.north ?? null, r.target.bounds?.west ?? null, r.target.bounds?.east ?? null, r.metadata.id, "NOAA CoastWatch ERDDAP", r.code, r.metadata.unit, OCEAN_SOURCES[r.code].unit, m.month, m.value, m.coverage, m.validCells, m.oceanCells, r.metadata.version, OCEAN_VERSION, t.slope, t.reason]); }))])); }
