@@ -6,10 +6,15 @@ export default function AttenuationMap({ result, onPoint }: { result: MapResult;
   const host = useRef<HTMLDivElement>(null), callback = useRef(onPoint); callback.current = onPoint;
   useEffect(() => {
     if (!host.current) return;
-    const map = L.map(host.current, { scrollWheelZoom: false, preferCanvas: true });
+    const container = document.createElement("div");
+    container.className = "h-full w-full";
+    host.current.replaceChildren(container);
+    const map = L.map(container, { scrollWheelZoom: false, preferCanvas: true });
+    const b = result.scenario.extent;
+    map.fitBounds([[b.south, b.west], [b.north, b.east]], { padding: [15, 15] });
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap · locally evaluated ITU climatology" }).addTo(map);
     const css = getComputedStyle(document.documentElement), colors = Array.from({ length: 5 }, (_, i) => css.getPropertyValue(`--spatial-value-${i}`).trim());
-    const b = result.scenario.extent, max = result.levels.at(-1) ?? 1;
+    const max = result.levels.at(-1) ?? 1;
     const collection: FeatureCollection = { type: "FeatureCollection", features: result.features };
     L.geoJSON(collection, {
       interactive: false,
@@ -26,8 +31,7 @@ export default function AttenuationMap({ result, onPoint }: { result: MapResult;
       marker?.remove(); marker = L.circleMarker(e.latlng, { radius: 5, color: css.getPropertyValue("--foreground").trim(), fillColor: css.getPropertyValue("--background").trim(), fillOpacity: 1 }).addTo(map);
       callback.current(lat, lng);
     });
-    map.fitBounds([[b.south, b.west], [b.north, b.east]], { padding: [15, 15] });
-    return () => { map.remove(); };
+    return () => { map.remove(); container.remove(); };
   }, [result]);
   return <div ref={host} className="spatial-map h-[420px] w-full border border-border" aria-label="Filled contour attenuation map" />;
 }
