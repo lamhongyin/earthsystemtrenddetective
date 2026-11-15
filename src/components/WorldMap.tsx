@@ -51,7 +51,7 @@ export default function WorldMap({ a, b, compare, active, onSelect }: { a: Point
     const target = active === "A" ? a : b;
     if (!validateCoords(target.lat, target.lon)) map.current.panTo({ lat: Math.max(-85, Math.min(85, target.lat)), lng: target.lon });
   }, [a, b, compare, active, ready]);
-  return <div className="relative h-[340px] w-full overflow-hidden border border-border bg-muted sm:h-[400px]">
+  return <div className="relative h-[420px] w-full overflow-hidden border border-border bg-muted sm:h-[520px] lg:h-[clamp(520px,65vh,900px)]">
     <div ref={host} className="h-full w-full" aria-label={`World map — select location ${active}`} />
     {!ready && <div className="absolute inset-0 flex items-center justify-center p-8 text-center text-sm text-muted-foreground" role="status">{error ?? "Loading world map…"}</div>}
   </div>;
