@@ -2,7 +2,8 @@ import { createFileRoute, ClientOnly } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Globe2, Loader2, Info, MapPin, GitCompareArrows, Satellite, RadioTower } from "lucide-react";
+import { Loader2, Info, MapPin, GitCompareArrows, Satellite, RadioTower } from "lucide-react";
+import teamLogo from "@/assets/branding/uthmspace-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,7 +102,7 @@ function Index() {
     if (id === reqId.current) setLoading(false);
   }
   return <div className="min-h-screen bg-background">
-    <header className="border-b border-border bg-card"><div className="mx-auto max-w-7xl px-4 py-6 sm:px-6"><div className="flex items-center gap-3"><Globe2 className="size-8 shrink-0 text-primary" /><h1 className="text-2xl font-bold sm:text-4xl">Earth System Trend Detective</h1></div><p className="mt-2 text-sm text-muted-foreground">Explore worldwide environmental trends with NASA POWER</p></div></header>
+    <header className="border-b border-border bg-card"><div className="mx-auto max-w-7xl px-4 py-6 sm:px-6"><div className="flex items-center gap-4"><img src={teamLogo.url} alt="UTHMSPACE — Universiti Tun Hussein Onn Malaysia" width={80} height={80} className="size-16 shrink-0 object-contain sm:size-20" /><div className="min-w-0"><h1 className="text-2xl font-bold sm:text-4xl">Earth System Trend Detective</h1><p className="mt-2 text-sm text-muted-foreground">Explore worldwide environmental trends with NASA POWER</p></div></div></div></header>
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Analysis mode"><Button variant={mode === "single" ? "default" : "outline"} aria-pressed={mode === "single"} disabled={loading} onClick={() => { setMode("single"); setActive("A"); }}><MapPin />Single location</Button><Button variant={mode === "compare" ? "default" : "outline"} aria-pressed={mode === "compare"} disabled={loading} onClick={() => setMode("compare")}><GitCompareArrows />Compare two locations</Button></div>
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
